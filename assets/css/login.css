@@ -1,0 +1,62 @@
+body {
+    position: relative;
+    overflow: hidden;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+}
+
+.logo {
+    width: 50px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+
+/* Image column styles for large screens */
+.image-column {
+    background: url('../../assets/images/backgrounds/Worker\ at\ station.jpg') no-repeat center center;
+    background-size: cover; /* Cover to maintain aspect ratio */
+    height: 100vh; /* Full height */
+}
+
+.login-container {
+    min-height: 100vh; /* Make the container full height */
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: row; /* Row layout */
+}
+
+.login-form {
+    max-width: 400px; /* Set a max width for the form */
+    width: 100%; /* Ensure it takes full width of the column */
+    padding: 30px; /* Add padding for aesthetics */
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+@media (max-width: 768px) {
+    /* On smaller screens */
+    .image-column {
+        display: none; /* Hide the image column */
+    }
+
+    .login-container {
+        flex-direction: column; /* Stack vertically */
+        background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+        background: url('../../assets/images/backgrounds/Worker\ at\ station.jpg') no-repeat center center; /* Use the image as background */
+        background-size: cover; /* Cover to maintain aspect ratio */
+        height: 100vh; /* Full height */
+    }
+
+    .login-form-wrapper {
+        display: flex; /* Use flexbox for centering */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        height: 100vh; /* Full height */
+    }
+
+    .login-form {
+        margin: 0; /* Reset margin */
+        top: 0; /* Reset top */
+        transform: translateY(0); /* Reset transformation */
+    }
+}
