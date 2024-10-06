@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rinse clean | Landing page</title>
+    <title>Rinse Clean | Landing Page</title>
     <link rel="shortcut icon" href="./assets/images/icons/laundry-machine.png" type="image/x-icon">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +13,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
-
 
 <body>
 
@@ -25,7 +24,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                    <ul class="navbar-nav mx-auto"> <!-- Use mx-auto to center the items -->
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="#Home">Home</a>
                         </li>
@@ -33,7 +32,7 @@
                             <a class="nav-link" href="#service">Our Services</a>
                         </li>
                     </ul>
-                    <a class="btn btn-primary" href="./public/login/login.php" role="button">Get Started</a>
+                    <a class="btn btn-primary custom-btn" href="./public/login/login.php" role="button">Get Started</a>
                 </div>
             </div>
         </nav>
@@ -46,13 +45,12 @@
                 <div class="col-md-6 hero-content">
                     <h1 class="hero-title">Rinse Clean</h1>
                     <p class="hero-subtitle">Say goodbye to laundry day stress! Our expert cleaning services provide you with pristine clothes, letting you focus on what really matters.</p>
-                    <a class="btn btn-primary" href="./public/login/login.php" role="button">Get Started</a>
+                    <a class="btn btn-primary custom-btn" href="./public/login/login.php" role="button">Get Started</a>
                 </div>
             </div>
         </div>
     </section>
-    
     <!--Hero section ends here-->
-    
+
 </body>
 </html>

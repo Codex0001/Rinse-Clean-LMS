@@ -1,57 +1,88 @@
 /* Hero Section Styles */
 .hero-section {
-    position: relative; /* Position for overlay */
-    background-image: url('../images/backgrounds/store\ Background.jpg'); /* Update with your image path */
-    background-size: cover; /* Cover the entire section */
-    background-position: center; /* Center the image */
-    color: #fff; /* Set text color to white */
-    height: 100vh; /* Make the section cover the entire viewport height */
-    display: flex; /* Use flexbox for alignment */
-    align-items: center; /* Center the content vertically */
-    justify-content: flex-start; /* Align the content to the left */
-    padding: 0 20px; /* Add horizontal padding */
+    position: relative;
+    background-image: url('../images/backgrounds/store\ Background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Parallax effect on larger screens */
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 20px;
 }
 
 /* Overlay Effect */
 .hero-section::before {
     content: '';
-    position: absolute; /* Position overlay */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Darker overlay with 70% opacity */
-    z-index: 1; /* Position it behind text but above the background */
+    background-color: rgba(0, 0, 0, 0.6); /* Slightly reduce opacity for a cleaner look */
+    z-index: 1;
 }
 
 .hero-content {
-    position: relative; /* Position for text above overlay */
-    max-width: 600px; /* Limit the width of the content */
-    padding: 20px; /* Add padding for inner content */
-    z-index: 2; /* Position text above the overlay */
+    position: relative;
+    max-width: 600px;
+    padding: 20px;
+    z-index: 2;
 }
 
+/* Hero Title */
 .hero-title {
-    font-size: 4rem; /* Increase title size */
-    font-weight: bold; /* Make the title bold */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Add shadow for better readability */
+    font-size: 3.5rem; /* Balanced size for both desktop and large screens */
+    font-weight: bold;
+    line-height: 1.2;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Cleaner shadow */
+    margin-bottom: 20px; /* Spacing below the title */
 }
 
+/* Hero Subtitle */
 .hero-subtitle {
-    font-size: 1.5rem; /* Subtitle size */
-    margin-bottom: 20px; /* Space below subtitle */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Add shadow for better readability */
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Cleaner shadow for readability */
+    line-height: 1.5;
+}
+
+/* Button Style */
+.custom-btn {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: #0069d9;
+    border-color: #0062cc;
+    transition: all 0.3s ease-in-out;
+}
+
+.custom-btn:hover {
+    background-color: #004bb7;
+    border-color: #0042a3;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 2.5rem; /* Smaller title size for mobile */
+        font-size: 2.5rem; /* Smaller title size */
+        margin-bottom: 15px; /* Adjust spacing */
     }
 
     .hero-subtitle {
-        font-size: 1.25rem; /* Smaller subtitle size for mobile */
+        font-size: 1.25rem; /* Smaller subtitle */
+        margin-bottom: 15px;
+    }
+
+    .hero-section {
+        padding: 20px; /* Add some padding for mobile */
+    }
+
+    .custom-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
     }
 }
-
-

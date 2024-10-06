@@ -1,0 +1,66 @@
+CREATE TABLE IF NOT EXISTS customers (
+    id INT NOT NULL AUTO_INCREMENT,          
+    username VARCHAR(50) NOT NULL UNIQUE,    
+    password VARCHAR(255) NOT NULL,          
+    email VARCHAR(100) NOT NULL UNIQUE,      
+    phone_number VARCHAR(15) NOT NULL UNIQUE, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INT NOT NULL AUTO_INCREMENT,              
+    order_id VARCHAR(20),                        
+    customer_name VARCHAR(100) NOT NULL,         
+    laundry_type VARCHAR(50) NOT NULL,          
+    fabric_softener VARCHAR(100),                
+    pickup_time DATETIME NOT NULL,               
+    delivery_time DATETIME NOT NULL,             
+    special_instructions TEXT,                   
+    status VARCHAR(20) DEFAULT 'Pending',        
+    PRIMARY KEY (id)
+);
+
+-- Trigger to generate custom order ID with prefix 'RCLMS'
+DELIMITER //
+
+CREATE TRIGGER before_insert_orders
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    SET NEW.order_id = CONCAT('RCLMS', LPAD(NEW.id, 5, '0')); 
+END //
+
+DELIMITER ;
+
+CREATE TABLE IF NOT EXISTS admin (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS staff (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT,          
+    username VARCHAR(50) NOT NULL UNIQUE,    
+    password VARCHAR(255) NOT NULL,          
+    email VARCHAR(100) NOT NULL UNIQUE,      
+    phone_number VARCHAR(15) NOT NULL UNIQUE, 
+    role ENUM('admin', 'staff', 'customer') DEFAULT 'customer', 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    PRIMARY KEY (id)
+);
+
