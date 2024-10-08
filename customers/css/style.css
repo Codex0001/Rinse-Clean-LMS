@@ -43,6 +43,8 @@ body.dark {
     --text-color: #ccc;
 }
 
+
+
 /* ===== Sidebar ===== */
 .sidebar {
     position: fixed;
@@ -219,6 +221,7 @@ body.dark .sidebar header .toggle {
     color: var(--sidebar-color);
 }
 
+
 body.dark .sidebar li a:hover .icon,
 body.dark .sidebar li a:hover .text {
     color: var(--text-color);
@@ -305,13 +308,16 @@ body.dark .switch::before {
 .home {
     position: absolute;
     top: 0;
-    left: 250px;
+    left: 240px; /* When sidebar is open */
     height: 100vh;
     width: calc(100% - 250px);
     background-color: var(--body-color);
     transition: var(--tran-05);
 }
-
+.home.collapsed {
+    left: 130px; /* When sidebar is closed */
+    width: calc(100% - 100px); /* Adjust width accordingly */
+}
 .home .text {
     font-size: 30px;
     font-weight: 500;
@@ -361,42 +367,74 @@ body.dark .home .text {
 .time-display span {
     color: var(--text-color); /* Text color */
 }
-
-/* dashboard styling */
-/* Header Strip */
+/* ===== Dashboard Section Styles ===== */
+/* Header Strip Styling */
 .header-strip {
-    background-color: var(--primary-color-light); /* Same as your sidebar color scheme */
-    padding: 15px 30px; /* Adjust for padding */
-    transition: var(--tran-05); /* Smooth transition for sidebar toggle */
-    display: flex;
-    justify-content: center; /* Center the heading */
-    align-items: center;
-    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px; /* Ensure some space below the header */
 }
 
-.header-strip h1 {
-    font-size: 24px;
-    color: var(--text-color); /* Matches the theme */
-    font-weight: 500;
+/* Dashboard Container */
+.dashboard {
+    display: flex; /* Use flex for a row layout */
+    flex-direction: column; /* Stack elements vertically */
+    padding: 20px; /* Padding around the dashboard */
+    transition: padding 0.3s; /* Smooth transition for padding */
 }
 
-/* When sidebar is closed, adjust the width */
-.sidebar.close ~ .dashboard .header-strip {
-    padding-left: 50px; /* Add extra padding to compensate for sidebar */
+/* Widgets */
+.widget {
+    background-color: var(--primary-color-light); /* Use primary color light */
+    border-radius: 8px;
+    padding: 20px; /* Add padding to widgets */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+    text-align: center; /* Center the text in widgets */
 }
 
-/* Responsive adjustments */
+/* Responsive Styling */
 @media (max-width: 768px) {
-    .header-strip h1 {
-        font-size: 18px; /* Smaller font size for mobile */
+    .widget {
+        margin-bottom: 20px; /* Space between widgets on mobile */
     }
 }
 
-/* Adjusting for smaller screens */
-@media (max-width: 576px) {
-    .header-strip h1 {
-        font-size: 16px;
-    }
+/* Orders Table Section */
+.orders-section {
+    margin-top: 40px;
 }
 
+.orders-section h2 {
+    color: var(--primary-color); /* Use a primary color for the heading */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
 
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.thead-dark th {
+    background-color: var(--primary-color); /* Darker header */
+    color: white;
+}
+
+/* Mobile Friendly Table */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 14px;
+    }
+}

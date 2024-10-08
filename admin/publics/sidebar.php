@@ -21,7 +21,7 @@
 
                 <div class="text logo-text">
                     <span class="name">Rinse Clean</span>
-                    <span class="profession">Admin</span>
+                    <span class="profession">Admin| Panel</span>
                 </div>
             </div>
 

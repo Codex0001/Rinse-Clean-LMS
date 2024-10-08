@@ -1,13 +1,21 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+// Start the session
 session_start();
 
-// Destroy all session data
-session_unset();
-session_destroy();
+// Check if user is logged in
+if (isset($_SESSION['user_id'])) {
+    // Clear session data
+    session_unset();
+    session_destroy();
 
-// Redirect to login page
-header("Location: ../public/login/login.php"); // Ensure the path is correct
-exit();
+    // Optionally log the logout action (to a file, database, etc.)
+    // logLogout($_SESSION['user_id']); // Example function for logging
+
+    // Redirect to login page
+    header("Location: ../login/login.php"); // Ensure the path is correct
+    exit();
+} else {
+    // If no session exists, redirect to login
+    header("Location: /login.php");
+    exit();
+}
