@@ -361,3 +361,42 @@ body.dark .home .text {
 .time-display span {
     color: var(--text-color); /* Text color */
 }
+
+/* dashboard styling */
+/* Header Strip */
+.header-strip {
+    background-color: var(--primary-color-light); /* Same as your sidebar color scheme */
+    padding: 15px 30px; /* Adjust for padding */
+    transition: var(--tran-05); /* Smooth transition for sidebar toggle */
+    display: flex;
+    justify-content: center; /* Center the heading */
+    align-items: center;
+    text-align: center;
+}
+
+.header-strip h1 {
+    font-size: 24px;
+    color: var(--text-color); /* Matches the theme */
+    font-weight: 500;
+}
+
+/* When sidebar is closed, adjust the width */
+.sidebar.close ~ .dashboard .header-strip {
+    padding-left: 50px; /* Add extra padding to compensate for sidebar */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-strip h1 {
+        font-size: 18px; /* Smaller font size for mobile */
+    }
+}
+
+/* Adjusting for smaller screens */
+@media (max-width: 576px) {
+    .header-strip h1 {
+        font-size: 16px;
+    }
+}
+
+

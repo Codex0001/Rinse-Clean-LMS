@@ -3,11 +3,11 @@ session_start();
 require '../includes/rinseclean_lms.php'; // Ensure to include your database connection file
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
     // Prepare and execute the SQL statement
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM customers WHERE username = ?"); // Change to customers
     $stmt->bind_param("s", $username); // "s" indicates the type is string
     $stmt->execute();
     $result = $stmt->get_result();
@@ -37,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         exit();
     } else {
-        echo "Invalid username or password";
+        $_SESSION['error'] = "Invalid username or password"; // Set error message
+        header("Location: ../public/login/login.php"); // Redirect to login page
+        exit();
     }
 }

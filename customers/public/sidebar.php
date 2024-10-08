@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!----======== CSS ======== -->
-    <link rel="stylesheet" href="../../admin/css/style.css">
+    <link rel="stylesheet" href="../../customers/css/style.css">
     
     <!----===== Boxicons CSS ===== -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
@@ -21,7 +21,7 @@
 
                 <div class="text logo-text">
                     <span class="name">Rinse Clean</span>
-                    <span class="profession">Admin</span>
+                    <span class="profession">customer Panel</span>
                 </div>
             </div>
 
@@ -188,7 +188,26 @@
 
         // Initial call to set the time immediately on page load
         updateTime();
-    </script>
+
+        <!-- JavaScript -->
+            toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+            adjustHeader(); // Call adjustHeader on toggle
+        });
+
+        // Adjust header padding based on sidebar state
+        function adjustHeader() {
+            const headerStrip = document.querySelector(".header-strip");
+            if (sidebar.classList.contains("close")) {
+                headerStrip.style.paddingLeft = "50px"; // Adjust when sidebar is closed
+            } else {
+                headerStrip.style.paddingLeft = "30px"; // Default padding when sidebar is open
+            }
+        }
+
+        // Ensure correct padding on page load
+        window.addEventListener('load', adjustHeader);
+    </script>    
 
 </body>
 </html>

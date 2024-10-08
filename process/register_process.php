@@ -29,24 +29,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Insert the new customer into the database without hashing the password
-    $insert_query = "INSERT INTO customers (username, password, email, phone_number) VALUES (?, ?, ?, ?)";
+    // Insert the new customer into the database without hashing the password, and set the role to 'customer'
+    $insert_query = "INSERT INTO customers (username, password, email, phone_number, role) VALUES (?, ?, ?, ?, 'customer')";
     $insert_stmt = $conn->prepare($insert_query);
     $insert_stmt->bind_param("ssss", $username, $password, $email, $phone_number);
 
     if ($insert_stmt->execute()) {
         $_SESSION['success'] = "Registration successful! You can now log in.";
-        header("Location: ../public/login/login.php");
+        header("Location: ../public/login/login.php"); // Redirect to login page
+        exit();
     } else {
         $_SESSION['error'] = "Something went wrong. Please try again.";
-        header("Location: ../public/registration/registration.php");
+        header("Location: ../public/registration/registration.php"); // Redirect back to registration page
+        exit();
     }
-
-    // Close the prepared statements
-    $stmt->close();
-    $insert_stmt->close();
 }
 
-// Close the database connection
+// Close the prepared statements and database connection
+$stmt->close();
+$insert_stmt->close();
 $conn->close();
-
