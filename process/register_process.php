@@ -29,11 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Insert the new customer into the database without hashing the password, and set the role to 'customer'
-    $insert_query = "INSERT INTO customers (username, password, email, phone_number, role) VALUES (?, ?, ?, ?, 'customer')";
+    // Insert the new customer into the database without hashing the password
+    $insert_query = "INSERT INTO customers (username, password, email, phone_number) VALUES (?, ?, ?, ?)";
     $insert_stmt = $conn->prepare($insert_query);
     $insert_stmt->bind_param("ssss", $username, $password, $email, $phone_number);
-
     if ($insert_stmt->execute()) {
         $_SESSION['success'] = "Registration successful! You can now log in.";
         header("Location: ../public/login/login.php"); // Redirect to login page

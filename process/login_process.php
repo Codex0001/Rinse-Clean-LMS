@@ -6,22 +6,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Prepare and execute the SQL statement
-    $stmt = $conn->prepare("SELECT * FROM customers WHERE username = ?"); // Change to customers
+    // Check in the users table first (for admin and staff)
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?"); // Check in users table
     $stmt->bind_param("s", $username); // "s" indicates the type is string
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
+
+    // If user not found in users table, check customers table
+    if (!$user) {
+        $stmt = $conn->prepare("SELECT * FROM customers WHERE username = ?"); // Check in customers table
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+    }
 
     // Check if user exists and password matches
     if ($user && $user['password'] === $password) {
         // Password matches, set session variables
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
+        
+        // Set role based on whether the user is from the users or customers table
+        if (isset($user['role'])) {
+            $_SESSION['role'] = $user['role'];
+        } else {
+            $_SESSION['role'] = 'customer'; // Default role for customers
+        }
 
         // Redirect based on role
-        switch ($user['role']) {
+        switch ($_SESSION['role']) {
             case 'admin':
                 header('Location: ../admin/dashboard.php');
                 break;

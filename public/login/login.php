@@ -27,7 +27,7 @@
                         <a class="nav-link" href="../../index.php">Our Services</a>
                     </li>
                 </ul>
-                <a class="btn btn-primary" href="/public/login/login.php" role="button">Get Started</a>
+                <a class="btn btn-primary" href="../../public/login/login.php" role="button">Get Started</a>
             </div>
         </div>
     </nav>
