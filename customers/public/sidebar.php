@@ -85,7 +85,7 @@
 
         <div class="bottom-content">
             <li class="">
-                <a href="../../public/login/logout.php" class="logout-button">
+                <a href="../public/login/logout.php" class="logout-button">
                     <i class='bx bx-log-out icon'></i>
                     <span class="text nav-text">Logout</span>
                 </a>
