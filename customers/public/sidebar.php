@@ -41,28 +41,36 @@
 
             <ul class="menu-links">
                 <li class="nav-link active">
-                    <a href="../../customers/dashboard.php"> 
+                    <a href="dashboard.php"> 
                         <i class='bx bx-home icon'></i> <!-- Updated icon -->
                         <span class="text nav-text">Dashboard</span>
                     </a>
                 </li>
 
+                <li class="nav-link active">
+                    <a href="orders.php"> 
+                        <i class='bx bx-shopping-bag icon'></i> <!-- Updated icon -->
+                         <span class="text nav-text">Orders</span>
+                    </a>
+                </li>
+
+
                 <li class="nav-link">
-                    <a href="../../customers/reports.php"> 
+                    <a href="reports.php"> 
                         <i class='bx bx-file icon'></i> <!-- Updated icon -->
                         <span class="text nav-text">Reports</span>
                     </a>
                 </li>
 
                 <li class="nav-link">
-                    <a href="../../customers/profile.php"> 
+                    <a href="my_profile.php"> 
                         <i class='bx bx-user icon'></i> <!-- Kept the same icon for profile -->
                         <span class="text nav-text">My Profile</span>
                     </a>
                 </li>
 
                 <li class="nav-link">
-                    <a href="../../customers/feedback.php"> 
+                    <a href="feeback.php"> 
                         <i class='bx bx-chat icon'></i> <!-- Updated icon -->
                         <span class="text nav-text">Feedback</span>
                     </a>
@@ -77,7 +85,7 @@
 
         <div class="bottom-content">
             <li class="">
-                <a href="../../public/login/logout.php">
+                <a href="../../public/login/logout.php" class="logout-button">
                     <i class='bx bx-log-out icon'></i>
                     <span class="text nav-text">Logout</span>
                 </a>
@@ -97,74 +105,90 @@
         </div>
     </div>
 </nav>
-
 <script>
-    const body = document.querySelector('body'),
-        sidebar = body.querySelector('nav'),
-        toggle = body.querySelector(".toggle"),
-        searchBtn = body.querySelector(".search-box"),
-        modeSwitch = body.querySelector(".toggle-switch"),
-        modeText = body.querySelector(".mode-text"),
-        homeSection = body.querySelector('.home'); // Select the home section
+    document.addEventListener("DOMContentLoaded", () => {
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle"),
+            searchBtn = body.querySelector(".search-box"),
+            modeSwitch = body.querySelector(".toggle-switch"),
+            modeText = body.querySelector(".mode-text"),
+            homeSection = body.querySelector('.home');
 
-    toggle.addEventListener("click", () => {
-        sidebar.classList.toggle("close");
-        
-        // Toggle the 'collapsed' class on the home section
-        if (sidebar.classList.contains("close")) {
-            homeSection.classList.add('collapsed'); // Add class for collapsed state
-        } else {
-            homeSection.classList.remove('collapsed'); // Remove class for open state
+        // Function to load the theme on page load
+        function loadTheme() {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                body.classList.add(storedTheme);
+                modeText.innerText = storedTheme === 'dark' ? "Light mode" : "Dark mode";
+            }
         }
-    });
 
-    searchBtn.addEventListener("click", () => {
-        sidebar.classList.remove("close");
-        homeSection.classList.remove('collapsed'); // Ensure home section adjusts if sidebar is opened
-    });
-
-    modeSwitch.addEventListener("click", () => {
-        body.classList.toggle("dark");
-
-        if (body.classList.contains("dark")) {
-            modeText.innerText = "Light mode";
-        } else {
-            modeText.innerText = "Dark mode";
+        // Function to save the current theme to localStorage
+        function saveTheme(theme) {
+            localStorage.setItem('theme', theme);
         }
-    });
 
-    // Active link highlight
-    const navLinks = document.querySelectorAll('.nav-link a');
+        // Automatically open sidebar on large screens
+        function checkScreenSize() {
+            if (window.innerWidth >= 768) { // Change this value based on your breakpoint
+                sidebar.classList.remove("close"); // Ensure sidebar is open on large screens
+                homeSection.classList.remove('collapsed'); // Adjust home section margin
+            } else {
+                sidebar.classList.add("close"); // Ensure sidebar is closed on small screens
+                homeSection.classList.add('collapsed');
+            }
+        }
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            navLinks.forEach(nav => nav.parentElement.classList.remove('active')); // Remove active class from all links
-            link.parentElement.classList.add('active'); // Add active class to clicked link
+        // Initial check for screen size on load
+        checkScreenSize();
+
+        // Load theme from localStorage
+        loadTheme();
+
+        // Resize event listener to adjust sidebar on window resize
+        window.addEventListener('resize', checkScreenSize);
+
+        toggle.addEventListener("click", () => {
+            const isClosed = sidebar.classList.toggle("close");
+            homeSection.classList.toggle('collapsed', isClosed);
         });
+
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.remove("close");
+            homeSection.classList.remove('collapsed');
+        });
+
+        modeSwitch.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            const currentTheme = body.classList.contains("dark") ? "dark" : "light";
+            modeText.innerText = currentTheme === "dark" ? "Light mode" : "Dark mode";
+            saveTheme(currentTheme); // Save current theme to localStorage
+        });
+
+        const navLinks = document.querySelectorAll('.nav-link a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.forEach(nav => nav.parentElement.classList.remove('active'));
+                link.parentElement.classList.add('active');
+            });
+        });
+
+        function updateTime() {
+            const now = new Date();
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const day = days[now.getDay()];
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeString = now.toLocaleTimeString([], options);
+            document.getElementById('current-time').innerText = `${day}, ${timeString}`;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
     });
-
-    function updateTime() {
-        const now = new Date();
-        
-        // Get the day of the week
-        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const day = days[now.getDay()];
-
-        // Format time (24-hour format)
-        const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        const timeString = now.toLocaleTimeString([], options);
-
-        // Update the inner text to include both day and time
-        document.getElementById('current-time').innerText = `${day}, ${timeString}`;
-    }
-
-    // Update the time every second
-    setInterval(updateTime, 1000);
-
-    // Initial call to set the time immediately on page load
-    updateTime();
-  
 </script>
+
+
 
 </body>
 </html>

@@ -16,6 +16,10 @@
     --primary-color-light: #F6F5FF;
     --toggle-color: #DDD;
     --text-color: #707070;
+    --text-color-dark: #FFFFFF; /* Added for dark mode */
+    --sidebar-text-color-dark: #D7D7D7; /* Added for sidebar text in dark mode */
+    --button-background: #695CFE; /* Button background color */
+    --button-background-dark: #4C4D4E; /* Button background color for dark mode */
 
     /* ====== Transition ====== */
     --tran-03: all 0.2s ease;
@@ -40,10 +44,8 @@ body.dark {
     --primary-color: #3a3b3c;
     --primary-color-light: #3a3b3c;
     --toggle-color: #fff;
-    --text-color: #ccc;
+    --text-color: var(--text-color-dark); /* Use dark mode text color */
 }
-
-
 
 /* ===== Sidebar ===== */
 .sidebar {
@@ -71,7 +73,7 @@ body.dark {
     margin-top: 10px;
 }
 
-.sidebar header .image,
+.sidebar.header .image,
 .sidebar .icon {
     min-width: 60px;
     border-radius: 6px;
@@ -221,7 +223,6 @@ body.dark .sidebar header .toggle {
     color: var(--sidebar-color);
 }
 
-
 body.dark .sidebar li a:hover .icon,
 body.dark .sidebar li a:hover .text {
     color: var(--text-color);
@@ -314,10 +315,12 @@ body.dark .switch::before {
     background-color: var(--body-color);
     transition: var(--tran-05);
 }
+
 .home.collapsed {
     left: 130px; /* When sidebar is closed */
     width: calc(100% - 100px); /* Adjust width accordingly */
 }
+
 .home .text {
     font-size: 30px;
     font-weight: 500;
@@ -345,96 +348,67 @@ body.dark .home .text {
     font-size: 14px; /* Font size */
     justify-content: space-between; /* Space items evenly */
     padding: 10px; /* Add padding for better spacing */
-    border-radius: 6px; /* Match sidebar button styles */
-    background-color: var(--primary-color-light); /* Match background color */
-    transition: background-color 0.3s; /* Smooth transition */
+    border-radius: 6px; /* Add border radius for rounded corners */
 }
 
-/* Adjust the time text for responsiveness */
-.time-display span {
-    display: inline-block;
-    padding: 5px 10px; /* Padding around the text */
-    border-radius: 5px; /* Rounded corners */
-    transition: background-color 0.3s; /* Smooth background transition */
+/* Button Styles */
+.button {
+    background-color: var(--button-background);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: var(--tran-03);
 }
 
-/* Hover effect */
-.time-display:hover {
-    background-color: rgba(255, 255, 255, 0.3); /* Lighten background on hover */
+.button:hover {
+    background-color: darken(var(--button-background), 10%);
 }
 
-/* Specific time text styles */
-.time-display span {
-    color: var(--text-color); /* Text color */
-}
-/* ===== Dashboard Section Styles ===== */
-/* Header Strip Styling */
-.header-strip {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px; /* Ensure some space below the header */
+.logout-button {
+    display: flex; /* Keep the flex display for alignment */
+    align-items: center; /* Center items vertically */
+    height: 100%; /* Make it fill the list item height */
+    padding: 10px; /* Add padding for better touch target */
+    color: var(--text-color); /* Default text color */
+    transition: background-color var(--tran-03), color var(--tran-03); /* Transition for smooth effect */
 }
 
-/* Dashboard Container */
-.dashboard {
-    display: flex; /* Use flex for a row layout */
-    flex-direction: column; /* Stack elements vertically */
-    padding: 20px; /* Padding around the dashboard */
-    transition: padding 0.3s; /* Smooth transition for padding */
+/* Hover Effect */
+.logout-button:hover {
+    background-color: red; /* Change background to red on hover */
+    color: #fff; /* Optional: Change text color to white on hover */
 }
 
-/* Widgets */
-.widget {
-    background-color: var(--primary-color-light); /* Use primary color light */
-    border-radius: 8px;
-    padding: 20px; /* Add padding to widgets */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-    text-align: center; /* Center the text in widgets */
+
+body.dark .button {
+    background-color: var(--button-background-dark);
+    color: var(--text-color); /* Adjust button text color */
 }
 
-/* Responsive Styling */
-@media (max-width: 768px) {
-    .widget {
-        margin-bottom: 20px; /* Space between widgets on mobile */
-    }
+/* Card Styles */
+.card {
+    background-color: var(--sidebar-color);
+    color: var(--text-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--tran-05);
 }
 
-/* Orders Table Section */
-.orders-section {
-    margin-top: 40px;
+body.dark .card {
+    background-color: #3A3B3C; /* Dark background for the card in dark mode */
+    color: #D7D7D7; /* Lighter text for readability */
 }
 
-.orders-section h2 {
-    color: var(--primary-color); /* Use a primary color for the heading */
-    font-size: 24px;
-    margin-bottom: 20px;
+/* Feedback Section Styles */
+.feedback-section {
+    padding: 20px;
+    background-color: var(--body-color);
+    border-radius: 10px;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th, .table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.thead-dark th {
-    background-color: var(--primary-color); /* Darker header */
-    color: white;
-}
-
-/* Mobile Friendly Table */
-@media (max-width: 768px) {
-    .table th, .table td {
-        font-size: 14px;
-    }
+body.dark .feedback-section {
+    background-color: #242526; /* Darker background for feedback in dark mode */
 }
