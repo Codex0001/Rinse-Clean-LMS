@@ -52,6 +52,11 @@ $user = $result->fetch_assoc();
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../customers/css/style.css">
+    <style>
+        .dashboard {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 

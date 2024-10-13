@@ -37,11 +37,12 @@
                             <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-link submenu-toggle">
-                        <a href="reports.php">
-                            <i class='bx bx-bar-chart-alt-2 icon'></i>
-                            <span class="text nav-text">Reports</span>
-                        </a>
+
+                    <li class="nav-link active">
+                    <a href="orders.php"> 
+                        <i class='bx bx-shopping-bag icon'></i> <!-- Updated icon -->
+                         <span class="text nav-text">Orders</span>
+                    </a>
                     </li>
                     <li class="nav-link">
                         <a href="customers.php">
@@ -65,6 +66,12 @@
                         <a href="payments.php">
                             <i class='bx bx-credit-card icon'></i>
                             <span class="text nav-text">Payments</span>
+                        </a>
+                    </li>
+                    <li class="nav-link submenu-toggle">
+                        <a href="reports.php">
+                            <i class='bx bx-bar-chart-alt-2 icon'></i>
+                            <span class="text nav-text">Reports</span>
                         </a>
                     </li>
 

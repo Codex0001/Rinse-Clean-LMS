@@ -16,8 +16,8 @@ require_once '../includes/rinseclean_lms.php';
 // Fetch customer ID from the session
 $customer_id = $_SESSION['user_id'];
 
-// SQL query to fetch orders for the logged-in customer
-$sql = "SELECT orders.id, orders.pickup_time AS date, orders.laundry_type AS service, orders.status, orders.fabric_softener 
+// SQL query to fetch orders for the logged-in customer, including payment status
+$sql = "SELECT orders.id, orders.pickup_time AS date, orders.laundry_type AS service, orders.status, orders.fabric_softener, orders.payment_status 
         FROM orders 
         WHERE orders.customer_name = ?";
 
@@ -51,6 +51,11 @@ $loyalty_points = count(array_filter($orders, fn($order) => $order['status'] ===
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <!-- Customers CSS -->
     <link rel="stylesheet" href="../customers/css/style.css"> 
+    <style>
+        .dashboard {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -97,12 +102,13 @@ $loyalty_points = count(array_filter($orders, fn($order) => $order['status'] ===
                         <th scope="col">Laundry Type</th>
                         <th scope="col">Status</th>
                         <th scope="col">Fabric Softener</th>
+                        <th scope="col">Payment Status</th> <!-- Added Payment Status -->
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($orders)): ?>
                         <tr>
-                            <td colspan="5" class="text-center">No orders found.</td>
+                            <td colspan="6" class="text-center">No orders found.</td> <!-- Updated colspan to 6 -->
                         </tr>
                     <?php else: ?>
                         <?php foreach ($orders as $order): ?>
@@ -112,6 +118,7 @@ $loyalty_points = count(array_filter($orders, fn($order) => $order['status'] ===
                             <td><?php echo htmlspecialchars($order['service']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                             <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
+                            <td><?php echo htmlspecialchars($order['payment_status']); ?></td> <!-- Display Payment Status -->
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
