@@ -412,3 +412,64 @@ body.dark .card {
 body.dark .feedback-section {
     background-color: #242526; /* Darker background for feedback in dark mode */
 }
+
+/* Footer styling */
+.footer {
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px 0; /* Vertical padding for spacing */
+    text-align: center; /* Center align the text */
+    border-top: 1px solid #dee2e6; /* Optional: subtle border on top */
+}
+
+.footer p, .footer small {
+    margin: 0; /* Remove default margins */
+    color: #6c757d; /* Muted text color */
+}
+
+.footer a {
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+.footer a:hover {
+    color: #0056b3; /* Darker color on hover */
+}
+
+.footer .social-icons a {
+    color: #6c757d; /* Muted icon color */
+    margin: 0 10px; /* Spacing between social icons */
+    font-size: 20px; /* Size of the social icons */
+}
+
+.footer .social-icons a:hover {
+    color: #343a40; /* Darker color on hover */
+}
+
+/* Ensure the footer stays at the bottom when content is short */
+html, body {
+    height: 100%;
+}
+
+#wrapper {
+    min-height: 100%; /* Full height for the page */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+}
+
+.home {
+    flex: 1; /* Takes up the remaining space above the footer */
+}
+
+.footer {
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}
+
+.settings h3 {
+    font-size: 1.5rem;
+}
+
+.settings .card-header {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+

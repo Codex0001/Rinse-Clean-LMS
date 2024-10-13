@@ -31,6 +31,14 @@ $orders = [];
 while ($row = $result->fetch_assoc()) {
     $orders[] = $row;
 }
+
+// Calculate total orders, orders in progress, and loyalty points
+$total_orders = count($orders);
+$orders_in_progress = count(array_filter($orders, fn($order) => $order['status'] === 'In Progress'));
+
+// Assuming each completed order gives 10 loyalty points
+$loyalty_points = count(array_filter($orders, fn($order) => $order['status'] === 'Completed')) * 10;
+
 ?>
 
 <!DOCTYPE html>
@@ -61,19 +69,19 @@ while ($row = $result->fetch_assoc()) {
             <div class="col-lg-4">
                 <div class="widget bg-primary text-white p-3">
                     <h2>Total Orders</h2>
-                    <p id="total-orders">0</p>
+                    <p id="total-orders"><?php echo $total_orders; ?></p>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="widget bg-warning text-white p-3">
                     <h2>Orders In Progress</h2>
-                    <p id="orders-in-progress">0</p>
+                    <p id="orders-in-progress"><?php echo $orders_in_progress; ?></p>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="widget bg-success text-white p-3">
                     <h2>Loyalty Points</h2>
-                    <p id="loyalty-points">0</p>
+                    <p id="loyalty-points"><?php echo $loyalty_points; ?></p>
                 </div>
             </div>
         </div>
@@ -92,15 +100,21 @@ while ($row = $result->fetch_assoc()) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($order['id']); ?></td>
-                        <td><?php echo htmlspecialchars($order['date']); ?></td>
-                        <td><?php echo htmlspecialchars($order['service']); ?></td>
-                        <td><?php echo htmlspecialchars($order['status']); ?></td>
-                        <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <?php if (empty($orders)): ?>
+                        <tr>
+                            <td colspan="5" class="text-center">No orders found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($order['id']); ?></td>
+                            <td><?php echo htmlspecialchars($order['date']); ?></td>
+                            <td><?php echo htmlspecialchars($order['service']); ?></td>
+                            <td><?php echo htmlspecialchars($order['status']); ?></td>
+                            <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

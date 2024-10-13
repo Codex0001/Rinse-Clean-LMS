@@ -36,6 +36,8 @@ $total_revenue = $result->fetch_assoc()['total_revenue'] ?: 0; // Fallback to 0 
     <title>Admin | Dashboard</title>
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="../admin/css/style.css"> 
 </head>
 <body>
@@ -140,8 +142,14 @@ $total_revenue = $result->fetch_assoc()['total_revenue'] ?: 0; // Fallback to 0 
                 </tbody>
             </table>
         </div>
+
+        <!-- Add footer below main content -->
+        <?php include '../admin/publics/footer.php'; ?>
     </div>
 </section>
+
+         
+<div
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -28,10 +28,7 @@
 
         <div class="menu-bar">
             <div class="menu">
-                <li class="search-box">
-                    <i class='bx bx-search icon'></i>
-                    <input type="text" placeholder="Search">
-                </li>
+                <li class="search-box"></li>
 
                 <ul class="menu-links">
                     <li class="nav-link active">
@@ -41,39 +38,47 @@
                         </a>
                     </li>
                     <li class="nav-link submenu-toggle">
-                        <a href="#">
+                        <a href="reports.php">
                             <i class='bx bx-bar-chart-alt-2 icon'></i>
                             <span class="text nav-text">Reports</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="../../admin/customers.php">
+                        <a href="customers.php">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Customers</span>
                         </a>
                     </li>
                     <li class="nav-link submenu-toggle">
-                        <a href="#">
+                        <a href="inventory.php">
                             <i class='bx bx-cabinet icon'></i>
                             <span class="text nav-text">Inventory</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="../../admin/staff.php">
+                        <a href="staff.php">
                             <i class='bx bx-group icon'></i>
                             <span class="text nav-text">Staff</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="../../admin/payments.php">
+                        <a href="payments.php">
                             <i class='bx bx-credit-card icon'></i>
                             <span class="text nav-text">Payments</span>
                         </a>
                     </li>
+
                     <li class="nav-link">
-                        <a href="../../admin/access_control.php">
+                        <a href="access_control.php">
                             <i class='bx bx-user icon'></i>
                             <span class="text nav-text">Access Control</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-link">
+                        <a href="settings.php">
+                            <i class='bx bx-user icon'></i>
+                            <span class="text nav-text">Settings</span>
                         </a>
                     </li>
                 </ul>

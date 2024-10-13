@@ -57,6 +57,23 @@ CREATE TABLE staff (
     FOREIGN KEY (user_id) REFERENCES users(id)        -- Correct foreign key reference
 );
 
+CREATE TABLE settings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    wash_fold_rate DECIMAL(10, 2) NOT NULL, -- Rate in KES per kg
+    dry_cleaning_rate DECIMAL(10, 2) NOT NULL, -- Rate in KES per item
+    ironing_rate DECIMAL(10, 2), -- Added Ironing Rate in KES per item
+    bedding_rate DECIMAL(10, 2), -- Added Bedding & Linens Rate in KES
+    stain_removal_rate DECIMAL(10, 2), -- Added Stain Removal Rate in KES
+    specialty_fabric_rate DECIMAL(10, 2), -- Added Specialty Fabric Rate in KES
+    sms_notifications ENUM('enabled', 'disabled') DEFAULT 'enabled',
+    email_notifications ENUM('enabled', 'disabled') DEFAULT 'enabled',
+    opening_time TIME NOT NULL,
+    closing_time TIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp for tracking
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
 -- Insert test data into the customers table
 INSERT INTO customers (username, password, email, phone_number) 
 VALUES 
