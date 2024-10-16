@@ -7,19 +7,58 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'staff') {
     exit();
 }
 
-// Fetch the staff name from the session or database
-$staff_name = $_SESSION['username'];
-
 // Database connection
-require_once '../includes/rinseclean_lms.php'; 
+require_once '../includes/rinseclean_lms.php';
 
-// Fetch staff ID from the session
-$staff_id = $_SESSION['user_id'];
+// Initialize message variable
+$message = '';
 
-// Fetch orders for the logged-in staff member
-$sql = "SELECT orders.id, orders.pickup_time AS date, orders.laundry_type AS service, orders.status, orders.fabric_softener, orders.delivery_time, orders.payment_status 
+// Change order status to In Progress or Completed
+if (isset($_POST['update_order'])) {
+    $order_id = $_POST['order_id'];
+    $new_status = $_POST['status']; // Get selected status
+
+    // Update the order status
+    $update_sql = "UPDATE orders SET status = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param('si', $new_status, $order_id);
+
+    if ($update_stmt->execute()) {
+        $message = "Order status updated successfully.";
+    } else {
+        $message = "Error updating order status. Please try again.";
+    }
+
+    // Clear cache and refresh orders
+    header("Location: staff_orders.php?message=" . urlencode($message)); // Redirect to the staff orders page with a message
+    exit();
+}
+
+// Confirm payments
+if (isset($_POST['confirm_payment'])) {
+    $order_id = $_POST['order_id'];
+
+    // Update payment status
+    $payment_sql = "UPDATE orders SET payment_status = 'Confirmed' WHERE id = ?";
+    $payment_stmt = $conn->prepare($payment_sql);
+    $payment_stmt->bind_param('i', $order_id);
+
+    if ($payment_stmt->execute()) {
+        $message = "Payment confirmed successfully.";
+    } else {
+        $message = "Error confirming payment. Please try again.";
+    }
+
+    // Clear cache and refresh orders
+    header("Location: staff_orders.php?message=" . urlencode($message)); // Redirect to the staff orders page with a message
+    exit();
+}
+
+// Fetch all orders assigned to this staff member
+$staff_id = $_SESSION['user_id']; // Assuming user_id is the same as staff_id
+$sql = "SELECT orders.id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status 
         FROM orders 
-        WHERE orders.staff_id = ?"; // Assuming orders are linked to staff by staff_id
+        WHERE staff_id = ?"; // Get orders assigned to the staff member
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
@@ -41,55 +80,75 @@ while ($row = $result->fetch_assoc()) {
     <title>Staff | Orders</title>
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../staff/css/style.css"> 
+    <link rel="stylesheet" href="../admin/css/style.css">
+    <style>
+        .dashboard {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="d-flex" id="wrapper">
-        <!-- Sidebar -->
-        <?php include '../staff/public/sidebar.php'; ?>
-    </div>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <?php include '../staff/public/sidebar.php'; ?>
+</div>
 
 <section class="home">
-    <div class="dashboard">
-        <div class="header-strip">
-            <h1>Welcome, <?php echo htmlspecialchars($staff_name); ?>!</h1>
-        </div>
+    <div class="container mt-5">
+        <h1>Manage Your Orders</h1>
+
+        <!-- Success/Error Message -->
+        <?php if (!empty($message)): ?>
+            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
+        <?php endif; ?>
 
         <!-- Orders Table Section -->
         <div class="orders-section mt-5">
-            <h2 class="mb-4">Your Orders</h2>
             <table class="table table-striped table-hover">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Order ID</th>
+                        <th scope="col">Customer Name</th>
                         <th scope="col">Pickup Time</th>
                         <th scope="col">Laundry Type</th>
                         <th scope="col">Status</th>
-                        <th scope="col">Fabric Softener</th>
-                        <th scope="col">Delivery Time</th>
                         <th scope="col">Payment Status</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($order['id']); ?></td>
-                        <td><?php echo htmlspecialchars($order['date']); ?></td>
-                        <td><?php echo htmlspecialchars($order['service']); ?></td>
-                        <td><?php echo htmlspecialchars($order['status']); ?></td>
-                        <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
-                        <td><?php echo htmlspecialchars($order['delivery_time']); ?></td>
-                        <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
-                        <td>
-                            <button class="btn btn-success btn-sm confirm-payment" data-order-id="<?php echo htmlspecialchars($order['id']); ?>" data-status="Paid">Confirm Payment</button>
-                            <button class="btn btn-warning btn-sm confirm-payment" data-order-id="<?php echo htmlspecialchars($order['id']); ?>" data-status="Unpaid">Unconfirm Payment</button>
-                            <button class="btn btn-primary btn-sm update-status" data-order-id="<?php echo htmlspecialchars($order['id']); ?>" data-status="In Progress">In Progress</button>
-                            <button class="btn btn-success btn-sm update-status" data-order-id="<?php echo htmlspecialchars($order['id']); ?>" data-status="Completed">Completed</button>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <?php if (count($orders) > 0): ?>
+                        <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($order['id']); ?></td>
+                            <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
+                            <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
+                            <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
+                            <td><?php echo htmlspecialchars($order['status']); ?></td>
+                            <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
+                            <td>
+                                <form method="POST" class="d-inline">
+                                    <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
+                                    <select name="status" required>
+                                        <option value="">Select Status</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                    <button type="submit" name="update_order" class="btn btn-success btn-sm">Update</button>
+                                </form>
+                                <form method="POST" class="d-inline">
+                                    <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
+                                    <button type="submit" name="confirm_payment" class="btn btn-primary btn-sm">Confirm Payment</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="text-center">No orders found.</td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -97,66 +156,5 @@ while ($row = $result->fetch_assoc()) {
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-// Confirm payment functionality
-document.querySelectorAll('.confirm-payment').forEach(button => {
-    button.addEventListener('click', function() {
-        const orderId = this.dataset.orderId;
-        const newStatus = this.dataset.status;
-
-        // AJAX call to update payment status
-        fetch('../includes/update_payment_status.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ orderId, newStatus }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Payment status updated successfully!');
-                location.reload(); // Refresh the page to show updated status
-            } else {
-                alert('Error updating payment status.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating payment status.');
-        });
-    });
-});
-
-// Update order status functionality (same as before)
-document.querySelectorAll('.update-status').forEach(button => {
-    button.addEventListener('click', function() {
-        const orderId = this.dataset.orderId;
-        const newStatus = this.dataset.status;
-
-        // AJAX call to update order status
-        fetch('../includes/update_order_status.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ orderId, newStatus }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Order status updated successfully!');
-                location.reload(); // Refresh the page to show updated status
-            } else {
-                alert('Error updating order status.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating order status.');
-        });
-    });
-});
-</script>
 </body>
 </html>

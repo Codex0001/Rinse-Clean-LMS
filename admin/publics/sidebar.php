@@ -16,7 +16,7 @@
         <header>
             <div class="image-text">
                 <span class="image">
-                    <img src="../../assets/images/icons/laundry-machine.png" alt="logo" style="width: 50px; height: 50px;">
+                    <img src="laundry-machine.png" alt="logo" style="width: 50px; height: 50px;">
                 </span>
                 <div class="text logo-text">
                     <span class="name">Rinse Clean</span>
@@ -72,13 +72,6 @@
                         <a href="reports.php">
                             <i class='bx bx-bar-chart-alt-2 icon'></i>
                             <span class="text nav-text">Reports</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-link">
-                        <a href="access_control.php">
-                            <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Access Control</span>
                         </a>
                     </li>
 

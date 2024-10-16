@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- CSS -->
-    <link rel="stylesheet" href="../../admin/css/style.css">
-    
+    <link rel="stylesheet" href="../admin/css/style.css">
+     
     <!-- Boxicons CSS -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -20,7 +20,7 @@
                 </span>
                 <div class="text logo-text">
                     <span class="name">Rinse Clean</span>
-                    <span class="profession">Staff | Panel</span> <!-- Updated to reflect staff role -->
+                    <span class="profession">Staff | Panel</span>
                 </div>
             </div>
             <i class='bx bx-chevron-right toggle'></i>
@@ -32,35 +32,35 @@
 
                 <ul class="menu-links">
                     <li class="nav-link active">
-                        <a href="dashboard.php"> <!-- Updated link for staff dashboard -->
+                        <a href="dashboard.php">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="orders.php"> <!-- Updated link for staff orders -->
+                        <a href="orders.php">
                             <i class='bx bx-shopping-bag icon'></i>
                             <span class="text nav-text">Orders</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="staff/reports.php"> <!-- Updated link for staff reports -->
+                        <a href="reports.php">
                             <i class='bx bx-file icon'></i>
                             <span class="text nav-text">Reports</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="feedback_form.php"> <!-- Updated link for feedback form -->
+                        <a href="feedback.php">
                             <i class='bx bx-chat icon'></i>
                             <span class="text nav-text">Feedback</span>
                         </a>
                     </li>
 
                     <li class="nav-link">
-                        <a href="performance.php"> <!-- Link for performance overview -->
+                        <a href="performance.php">
                             <i class='bx bx-line-chart icon'></i>
                             <span class="text nav-text">Performance</span>
                         </a>
@@ -75,10 +75,10 @@
 
             <div class="bottom-content">
                 <li>
-                <a href="../public/login/logout.php" class="logout-button">
-                    <i class='bx bx-log-out icon'></i>
-                    <span class="text nav-text">Logout</span>
-                </a>
+                    <a href="../public/login/logout.php" class="logout-button">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
                 </li>
                 <li class="mode">
                     <div class="sun-moon">
@@ -118,10 +118,10 @@
 
             // Automatically open sidebar on large screens
             function checkScreenSize() {
-                if (window.innerWidth >= 768) { // Change this value based on your breakpoint
-                    sidebar.classList.remove("close"); // Ensure sidebar is open on large screens
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.remove("close");
                 } else {
-                    sidebar.classList.add("close"); // Ensure sidebar is closed on small screens
+                    sidebar.classList.add("close");
                 }
             }
 
@@ -163,7 +163,7 @@
             }
 
             setInterval(updateTime, 1000);
-            updateTime();
+            
         });
     </script>
 </body>

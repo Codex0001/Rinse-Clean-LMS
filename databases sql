@@ -34,28 +34,24 @@ END //
 
 DELIMITER ;
 
-CREATE TABLE IF NOT EXISTS users (
-    id INT NOT NULL AUTO_INCREMENT,          
-    username VARCHAR(50) NOT NULL UNIQUE,    
-    password VARCHAR(255) NOT NULL,          
-    email VARCHAR(100) NOT NULL UNIQUE,      
-    phone_number VARCHAR(15) NOT NULL UNIQUE, 
-    role ENUM('admin', 'staff', 'customer') DEFAULT 'customer', 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    PRIMARY KEY (id)
+CREATE TABLE users (
+    id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) NOT NULL UNIQUE,
+    role ENUM('admin', 'staff') DEFAULT 'staff',  -- Default role set to 'staff'
+    reg_number VARCHAR(12) UNIQUE,  -- Registration number for staff (added)
+    name VARCHAR(100) NOT NULL,  -- Name of the staff (added)
+    address VARCHAR(255),  -- Address of the staff (added)
+    status VARCHAR(20) DEFAULT 'active',  -- Status of the staff (added)
+    payout DECIMAL(10,2) DEFAULT 0.00,  -- Payout for staff (added)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE staff (
-    staff_id INT AUTO_INCREMENT PRIMARY KEY,          -- Unique staff identifier
-    reg_number VARCHAR(12) UNIQUE NOT NULL,           -- Registration number (e.g., RCLM-EMP0001)
-    name VARCHAR(100) NOT NULL,                       -- Staff full name
-    department VARCHAR(50) NOT NULL,                  -- Department or role
-    phone_number VARCHAR(15) NOT NULL,                -- Staff contact information
-    address VARCHAR(255),                             -- Staff address (optional)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Timestamp when staff was added
-    user_id INT,                                      -- Foreign key referencing the id in the users table
-    FOREIGN KEY (user_id) REFERENCES users(id)        -- Correct foreign key reference
-);
+INSERT INTO users (username, password, email, phone_number, role)
+VALUES ('admin', 'securepassword123', 'admin@example.com', '1234567890', 'admin');
+
 
 CREATE TABLE settings (
     id INT PRIMARY KEY AUTO_INCREMENT,

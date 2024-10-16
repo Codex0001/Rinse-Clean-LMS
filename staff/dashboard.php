@@ -16,10 +16,10 @@ require_once '../includes/rinseclean_lms.php';
 // Fetch staff ID from the session
 $staff_id = $_SESSION['user_id'];
 
-// Fetch data for widgets
-$total_orders = 0; // To be fetched from the database
-$orders_in_progress = 0; // To be fetched from the database
-$total_payouts = 0; // To be fetched from the database
+// Initialize variables for widgets
+$total_orders = 0; 
+$orders_in_progress = 0; 
+$total_payouts = 0; 
 
 // SQL query to count total orders
 $sql = "SELECT COUNT(*) AS total_orders FROM orders WHERE staff_id = ?";
@@ -49,9 +49,9 @@ $stmt->fetch();
 $stmt->close();
 
 // SQL query to fetch orders for the logged-in staff member
-$sql = "SELECT orders.id, orders.pickup_time AS date, orders.laundry_type AS service, orders.status, orders.fabric_softener, orders.delivery_time 
+$sql = "SELECT order_id, customer_name, pickup_time, laundry_type, status, fabric_softener, delivery_time 
         FROM orders 
-        WHERE orders.staff_id = ?";
+        WHERE staff_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
@@ -74,7 +74,13 @@ $stmt->close();
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../staff/css/style.css"> 
+    <style>
+        .dashboard {
+            padding: 20px;
+        }
+    </style>
 </head>
+
 <body>
 
     <div class="d-flex" id="wrapper">
@@ -86,7 +92,6 @@ $stmt->close();
     <div class="dashboard">
         <div class="header-strip d-flex justify-content-between align-items-center">
             <h1>Welcome, <?php echo $staff_name; ?>!</h1>
-            <div class="time-display" id="current-time"></div>
         </div>
         
         <!-- Clock-in/Clock-out Section -->
@@ -99,8 +104,8 @@ $stmt->close();
         <div class="row mt-4">
             <div class="col-lg-4">
                 <div class="widget bg-primary text-white p-3 rounded">
-                    <h2>Schedule Pickups</h2>
-                    <p class="h1" id="schedule-pickups"><?php echo $total_orders; ?></p>
+                    <h2>Total Orders</h2>
+                    <p class="h1" id="total-orders"><?php echo $total_orders; ?></p>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -112,7 +117,7 @@ $stmt->close();
             <div class="col-lg-4">
                 <div class="widget bg-success text-white p-3 rounded">
                     <h2>Total Earned Payouts</h2>
-                    <p class="h1" id="total-payouts"><?php echo number_format($total_payouts, 2); ?></p> <!-- Format payouts as currency -->
+                    <p class="h1" id="total-payouts"><?php echo number_format($total_payouts, 2); ?></p>
                 </div>
             </div>
         </div>
@@ -124,6 +129,7 @@ $stmt->close();
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Order ID</th>
+                        <th scope="col">Customer Name</th>
                         <th scope="col">Pickup Time</th>
                         <th scope="col">Laundry Type</th>
                         <th scope="col">Status</th>
@@ -135,9 +141,10 @@ $stmt->close();
                     <?php if (!empty($orders)): ?>
                         <?php foreach ($orders as $order): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($order['id']); ?></td>
-                            <td><?php echo htmlspecialchars($order['date']); ?></td>
-                            <td><?php echo htmlspecialchars($order['service']); ?></td>
+                            <td><?php echo htmlspecialchars($order['order_id']); ?></td>
+                            <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
+                            <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
+                            <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                             <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
                             <td><?php echo htmlspecialchars($order['delivery_time']); ?></td>
@@ -145,7 +152,7 @@ $stmt->close();
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center">No orders found.</td>
+                            <td colspan="7" class="text-center">No orders found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -162,15 +169,6 @@ $stmt->close();
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Function to update current time
-    function updateCurrentTime() {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        document.getElementById('current-time').innerHTML = now.toLocaleDateString('en-US', options);
-    }
-
-    setInterval(updateCurrentTime, 1000); // Update time every second
-
     // Add functionality for clock-in and clock-out buttons here
     document.getElementById('clock-in-btn').addEventListener('click', function() {
         // Logic to handle clock-in (e.g., AJAX request)

@@ -36,8 +36,8 @@ while ($row = $result->fetch_assoc()) {
 $total_orders = count($orders);
 $orders_in_progress = count(array_filter($orders, fn($order) => $order['status'] === 'In Progress'));
 
-// Assuming each completed order gives 10 loyalty points
-$loyalty_points = count(array_filter($orders, fn($order) => $order['status'] === 'Completed')) * 10;
+// Assuming each completed order gives 35 loyalty points
+$loyalty_points = count(array_filter($orders, fn($order) => $order['status'] === 'Completed')) * 35;
 
 ?>
 
