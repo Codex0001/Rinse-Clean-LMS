@@ -23,7 +23,7 @@ function updateOrderStatus($conn, $order_id, $new_status, $total_kgs) {
     return $update_stmt->execute();
 }
 
-// Change order status to In Progress or Completed
+// Change order status or update total kgs
 if (isset($_POST['update_order'])) {
     $order_id = (int)$_POST['order_id'];
     $new_status = $_POST['status'];
@@ -66,6 +66,7 @@ if (isset($_POST['confirm_payment'])) {
     } else {
         $message = "Error confirming payment. Please try again.";
     }
+    $payment_stmt->close();
 
     // Redirect to the orders page with a message
     header("Location: orders.php?message=" . urlencode($message));
@@ -95,7 +96,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff | Orders</title>
+    <title>Staff | Manage Orders</title>
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../admin/css/style.css">
@@ -136,7 +137,7 @@ $stmt->close();
                     <?php if (count($orders) > 0): ?>
                         <?php foreach ($orders as $order): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($order['id']); ?></td>
+                            <td><?php echo htmlspecialchars($order['order_id']); ?></td>
                             <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                             <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
@@ -146,14 +147,17 @@ $stmt->close();
                             <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
                             <td>
                                 <form method="POST" class="d-inline">
+                                    <input type="number" name="total_kgs" placeholder="Enter Kgs" required min="0" value="<?php echo htmlspecialchars($order['total_kgs']); ?>">
                                     <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
                                     <select name="status" required>
                                         <option value="">Select Status</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
+                                        <option value="In Progress" <?php if ($order['status'] === 'In Progress') echo 'selected'; ?>>In Progress</option>
+                                        <option value="Completed" <?php if ($order['status'] === 'Completed') echo 'selected'; ?>>Completed</option>
                                     </select>
                                     <button type="submit" name="update_order" class="btn btn-success btn-sm">Update</button>
                                 </form>
+                            </td>
+                            <td>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
                                     <button type="submit" name="confirm_payment" class="btn btn-primary btn-sm">Confirm Payment</button>

@@ -102,19 +102,41 @@ $settings = mysqli_fetch_assoc($result);
 
                         <button type="submit" class="btn btn-success mt-3">Update All Settings</button>
                     </form>
-                    <?php if (isset($_GET['update']) && $_GET['update'] == 'success'): ?>
-                        <div class="alert alert-success mt-3">Settings updated successfully!</div>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer inclusion -->
-    <?php include '../admin/publics/footer.php'; ?>
+    <!-- Success Notification Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateModalLabel">Settings Updated</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Your settings have been successfully updated.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Add any additional JS files -->
-    <script src="path_to_jquery.js"></script> <!-- Replace with actual path -->
-    <script src="path_to_bootstrap.js"></script> <!-- Replace with actual path -->
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Show the modal if the update was successful -->
+    <?php if (isset($_GET['update']) && $_GET['update'] == 'success'): ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+            updateModal.show();
+        });
+    </script>
+    <?php endif; ?>
+
 </body>
 </html>
