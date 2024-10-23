@@ -13,20 +13,28 @@ require_once '../includes/rinseclean_lms.php';
 // Initialize message variable
 $message = '';
 
-// Change order status to In Progress or Completed
+// Change order status or update total kgs
 if (isset($_POST['update_order'])) {
-    $order_id = $_POST['order_id'];
-    $new_status = $_POST['status']; // Get selected status
+    $order_id = (int)$_POST['order_id'];
+    $new_status = $_POST['status'];
+    $total_kgs = (int)$_POST['total_kgs']; // Ensure it's an integer
 
-    // Update the order status
-    $update_sql = "UPDATE orders SET status = ? WHERE id = ?";
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param('si', $new_status, $order_id);
-
-    if ($update_stmt->execute()) {
-        $message = "Order status updated successfully.";
+    // Validate the new status
+    $valid_statuses = ['In Progress', 'Completed'];
+    if (!in_array($new_status, $valid_statuses)) {
+        $message = "Invalid status selected.";
     } else {
-        $message = "Error updating order status. Please try again.";
+        // Update the order status and total kilograms
+        $update_sql = "UPDATE orders SET status = ?, total_kgs = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param('sii', $new_status, $total_kgs, $order_id);
+
+        if ($update_stmt->execute()) {
+            $message = "Order updated successfully.";
+        } else {
+            $message = "Error updating order. Please try again.";
+        }
+        $update_stmt->close();
     }
 
     // Clear cache and refresh orders
@@ -36,7 +44,7 @@ if (isset($_POST['update_order'])) {
 
 // Confirm payments
 if (isset($_POST['confirm_payment'])) {
-    $order_id = $_POST['order_id'];
+    $order_id = (int)$_POST['order_id']; // Ensure it's an integer
 
     // Update payment status
     $payment_sql = "UPDATE orders SET payment_status = 'Confirmed' WHERE id = ?";
@@ -48,6 +56,7 @@ if (isset($_POST['confirm_payment'])) {
     } else {
         $message = "Error confirming payment. Please try again.";
     }
+    $payment_stmt->close();
 
     // Clear cache and refresh orders
     header("Location: staff_orders.php?message=" . urlencode($message)); // Redirect to the staff orders page with a message
@@ -55,8 +64,8 @@ if (isset($_POST['confirm_payment'])) {
 }
 
 // Fetch all orders assigned to this staff member
-$staff_id = $_SESSION['user_id']; // Assuming user_id is the same as staff_id
-$sql = "SELECT orders.id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status 
+$staff_id = (int)$_SESSION['user_id']; // Assuming user_id is the same as staff_id
+$sql = "SELECT orders.id, orders.order_id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status, orders.total_kgs 
         FROM orders 
         WHERE staff_id = ?"; // Get orders assigned to the staff member
 
@@ -70,6 +79,7 @@ $orders = [];
 while ($row = $result->fetch_assoc()) {
     $orders[] = $row;
 }
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -77,7 +87,7 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff | Orders</title>
+    <title>Staff | Manage Orders</title>
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../admin/css/style.css">
@@ -114,6 +124,7 @@ while ($row = $result->fetch_assoc()) {
                         <th scope="col">Laundry Type</th>
                         <th scope="col">Status</th>
                         <th scope="col">Payment Status</th>
+                        <th scope="col">Total Kgs</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -121,7 +132,7 @@ while ($row = $result->fetch_assoc()) {
                     <?php if (count($orders) > 0): ?>
                         <?php foreach ($orders as $order): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($order['id']); ?></td>
+                            <td><?php echo htmlspecialchars($order['order_id']); ?></td>
                             <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                             <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
@@ -129,14 +140,17 @@ while ($row = $result->fetch_assoc()) {
                             <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
                             <td>
                                 <form method="POST" class="d-inline">
+                                    <input type="number" name="total_kgs" placeholder="Enter Kgs" required min="0" value="<?php echo htmlspecialchars($order['total_kgs']); ?>">
                                     <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
                                     <select name="status" required>
                                         <option value="">Select Status</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
+                                        <option value="In Progress" <?php if ($order['status'] === 'In Progress') echo 'selected'; ?>>In Progress</option>
+                                        <option value="Completed" <?php if ($order['status'] === 'Completed') echo 'selected'; ?>>Completed</option>
                                     </select>
                                     <button type="submit" name="update_order" class="btn btn-success btn-sm">Update</button>
                                 </form>
+                            </td>
+                            <td>
                                 <form method="POST" class="d-inline">
                                     <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order['id']); ?>">
                                     <button type="submit" name="confirm_payment" class="btn btn-primary btn-sm">Confirm Payment</button>
@@ -146,7 +160,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center">No orders found.</td>
+                            <td colspan="8" class="text-center">No orders found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

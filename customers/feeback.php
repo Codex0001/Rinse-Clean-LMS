@@ -13,15 +13,15 @@ require_once '../includes/rinseclean_lms.php';
 // Handle form submission for feedback
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Fetch form data
-    $customer_name = $_SESSION['username'];
-    $email = $_POST['email'];
-    $rating = $_POST['rating'];
-    $message = $_POST['message'];
+    $customer_id = $_SESSION['user_id']; // Get customer ID from session
+    $order_id = $_POST['order_id']; // Assuming order_id is passed as a hidden field in the form
+    $score = $_POST['rating'];
+    $comments = $_POST['message'];
 
     // Prepare and execute the SQL insert statement
-    $sql = "INSERT INTO feedback (customer_name, email, rating, message) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO feedback (customer_id, order_id, score, comments) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ssis', $customer_name, $email, $rating, $message);
+    $stmt->bind_param('iiis', $customer_id, $order_id, $score, $comments); // Adjusted to match your database structure
 
     if ($stmt->execute()) {
         header("Location: feedback.php?success=Feedback submitted successfully!");
@@ -32,7 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Fetch all feedback from the database
-$sql = "SELECT customer_name, rating, message, created_at FROM feedback ORDER BY created_at DESC";
+$sql = "SELECT f.score, f.comments, f.created_at, c.username 
+        FROM feedback f 
+        JOIN customers c ON f.customer_id = c.id 
+        ORDER BY f.created_at DESC";
 $result = $conn->query($sql);
 
 // Store feedback in an array
@@ -71,15 +74,12 @@ if ($result->num_rows > 0) {
 <section class="home">
     <div class="dashboard">
         <div class="header-strip">
-            <h1>Feedback</h1>
+            <h1> Customer Feedback</h1>
         </div>
 
         <!-- Feedback Form -->
         <form method="POST" action="feedback.php" class="mt-5">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address (optional)</label>
-                <input type="email" class="form-control" id="email" name="email">
-            </div>
+            <input type="hidden" name="order_id" value="<?php echo isset($_GET['order_id']) ? htmlspecialchars($_GET['order_id']) : ''; ?>"> <!-- Ensure order_id is passed -->
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <select id="rating" name="rating" class="form-select" required>
@@ -110,8 +110,8 @@ if ($result->num_rows > 0) {
             <div class="list-group">
                 <?php foreach ($feedbacks as $feedback): ?>
                     <div class="list-group-item">
-                        <h5><?php echo htmlspecialchars($feedback['customer_name']); ?> (<?php echo htmlspecialchars($feedback['rating']); ?> Stars)</h5>
-                        <p><?php echo htmlspecialchars($feedback['message']); ?></p>
+                        <h5><?php echo htmlspecialchars($feedback['username']); ?> (<?php echo htmlspecialchars($feedback['score']); ?> Stars)</h5>
+                        <p><?php echo htmlspecialchars($feedback['comments']); ?></p>
                         <small><?php echo htmlspecialchars(date('F j, Y, g:i a', strtotime($feedback['created_at']))); ?></small>
                     </div>
                 <?php endforeach; ?>
