@@ -1,3 +1,13 @@
+<?php
+// Include database connection
+include '../includes/rinseclean_lms.php'; // Adjust the path as necessary
+
+// Fetch current settings
+$query = "SELECT * FROM settings LIMIT 1"; // Assuming there is only one row in settings table
+$result = mysqli_query($conn, $query);
+$settings = mysqli_fetch_assoc($result);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,15 +43,15 @@
                                 <h4>Service Rates</h4>
                                 <div class="form-group mb-3">
                                     <label for="wash_fold_rate">Wash & Fold Rate (per kg)</label>
-                                    <input type="number" class="form-control" id="wash_fold_rate" name="wash_fold_rate" required>
+                                    <input type="number" class="form-control" id="wash_fold_rate" name="wash_fold_rate" value="<?php echo $settings['wash_fold_rate']; ?>" step="0.01" required>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="ironing_rate">Ironing Service Rate (per item)</label>
-                                    <input type="number" class="form-control" id="ironing_rate" name="ironing_rate" required>
+                                    <input type="number" class="form-control" id="ironing_rate" name="ironing_rate" value="<?php echo $settings['ironing_rate']; ?>" step="0.01">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="bedding_rate">Bedding & Linens Rate (per item)</label>
-                                    <input type="number" class="form-control" id="bedding_rate" name="bedding_rate" required>
+                                    <input type="number" class="form-control" id="bedding_rate" name="bedding_rate" value="<?php echo $settings['bedding_rate']; ?>" step="0.01">
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-12">
@@ -49,15 +59,15 @@
                                 <h4>More Rates</h4>
                                 <div class="form-group mb-3">
                                     <label for="dry_cleaning_rate">Dry Cleaning Rate (per item)</label>
-                                    <input type="number" class="form-control" id="dry_cleaning_rate" name="dry_cleaning_rate" required>
+                                    <input type="number" class="form-control" id="dry_cleaning_rate" name="dry_cleaning_rate" value="<?php echo $settings['dry_cleaning_rate']; ?>" step="0.01">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="stain_removal_rate">Stain Removal Rate (per item)</label>
-                                    <input type="number" class="form-control" id="stain_removal_rate" name="stain_removal_rate" required>
+                                    <input type="number" class="form-control" id="stain_removal_rate" name="stain_removal_rate" value="<?php echo $settings['stain_removal_rate']; ?>" step="0.01">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="specialty_fabric_rate">Specialty Fabric Rate (per kg)</label>
-                                    <input type="number" class="form-control" id="specialty_fabric_rate" name="specialty_fabric_rate" required>
+                                    <input type="number" class="form-control" id="specialty_fabric_rate" name="specialty_fabric_rate" value="<?php echo $settings['specialty_fabric_rate']; ?>" step="0.01">
                                 </div>
                             </div>
                         </div>
@@ -67,15 +77,15 @@
                         <div class="form-group mb-3">
                             <label for="sms_notifications">SMS Notifications</label>
                             <select class="form-control" id="sms_notifications" name="sms_notifications">
-                                <option value="enabled">Enabled</option>
-                                <option value="disabled">Disabled</option>
+                                <option value="enabled" <?php echo isset($settings['sms_notifications']) && $settings['sms_notifications'] == 'enabled' ? 'selected' : ''; ?>>Enabled</option>
+                                <option value="disabled" <?php echo isset($settings['sms_notifications']) && $settings['sms_notifications'] == 'disabled' ? 'selected' : ''; ?>>Disabled</option>
                             </select>
                         </div>
                         <div class="form-group mb-3">
                             <label for="email_notifications">Email Notifications</label>
                             <select class="form-control" id="email_notifications" name="email_notifications">
-                                <option value="enabled">Enabled</option>
-                                <option value="disabled">Disabled</option>
+                                <option value="enabled" <?php echo isset($settings['email_notifications']) && $settings['email_notifications'] == 'enabled' ? 'selected' : ''; ?>>Enabled</option>
+                                <option value="disabled" <?php echo isset($settings['email_notifications']) && $settings['email_notifications'] == 'disabled' ? 'selected' : ''; ?>>Disabled</option>
                             </select>
                         </div>
 
@@ -83,11 +93,11 @@
                         <h4>Operational Hours</h4>
                         <div class="form-group mb-3">
                             <label for="opening_time">Opening Time</label>
-                            <input type="time" class="form-control" id="opening_time" name="opening_time" required>
+                            <input type="time" class="form-control" id="opening_time" name="opening_time" value="<?php echo $settings['opening_time']; ?>" required>
                         </div>
                         <div class="form-group mb-3">
                             <label for="closing_time">Closing Time</label>
-                            <input type="time" class="form-control" id="closing_time" name="closing_time" required>
+                            <input type="time" class="form-control" id="closing_time" name="closing_time" value="<?php echo $settings['closing_time']; ?>" required>
                         </div>
 
                         <button type="submit" class="btn btn-success mt-3">Update All Settings</button>

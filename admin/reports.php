@@ -23,7 +23,7 @@ $staffResult = $conn->query($staffQuery);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Reports</title>
-    <!-- Include your CSS and Bootstrap for styling -->
+    <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../admin/css/style.css">

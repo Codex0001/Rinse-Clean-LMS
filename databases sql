@@ -69,32 +69,10 @@ CREATE TABLE settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-
--- Insert test data into the customers table
-INSERT INTO customers (username, password, email, phone_number) 
-VALUES 
-('jmwangi', 'password123', 'jmwangi@example.com', '0712345678'),
-('akimani', 'password456', 'akimani@example.com', '0723456789'),
-('wotieno', 'password789', 'wotieno@example.com', '0734567890');
-
--- Insert test data into the users table
-INSERT INTO users (username, password, email, phone_number, role) 
-VALUES 
-('admin01', 'adminpass', 'admin01@example.com', '0700111222', 'admin'),
-('staff01', 'staffpass', 'staff01@example.com', '0700222333', 'staff'),
-('jmwangi', 'password123', 'jmwangi@example.com', '0712345678', 'customer'),
-('akimani', 'password456', 'akimani@example.com', '0723456789', 'customer'),
-('wotieno', 'password789', 'wotieno@example.com', '0734567890', 'customer');
-
--- Insert test data into the staff table
-INSERT INTO staff (reg_number, name, department, phone_number, address, user_id)
-VALUES
-('RCLM-EMP0001', 'Paul Mutua', 'Laundry Technician', '0711222333', '123 Nairobi St.', 2), 
-('RCLM-EMP0002', 'Mary Njeri', 'Customer Service', '0722333444', '456 Mombasa Rd.', 3);
-
--- Insert test data into the orders table
-INSERT INTO orders (customer_name, laundry_type, fabric_softener, pickup_time, delivery_time, special_instructions, status)
-VALUES
-('James Mwangi', 'Dry Cleaning', 'Lavender', '2024-10-09 09:00:00', '2024-10-10 18:00:00', 'Handle with care', 'Pending'),
-('Anne Kimani', 'Wash and Fold', 'Rose', '2024-10-10 10:30:00', '2024-10-11 17:00:00', 'No bleach', 'Scheduled'),
-('Wycliffe Otieno', 'Wash and Iron', 'None', '2024-10-11 08:00:00', '2024-10-12 16:30:00', 'Use fabric softener', 'In Progress');
+CREATE TABLE staff (
+    reg_number VARCHAR(50) PRIMARY KEY,  -- Use reg_number as the primary key, e.g., "RCLMS XXXX"
+    name VARCHAR(100) NOT NULL,           -- Staff member's full name
+    phone_number VARCHAR(15) NOT NULL,    -- Staff phone number
+    username VARCHAR(50) NOT NULL UNIQUE, -- Username for login, unique per staff
+    password VARCHAR(255) NOT NULL       -- Password for login
+);

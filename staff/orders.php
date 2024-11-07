@@ -12,31 +12,49 @@ require_once '../includes/rinseclean_lms.php';
 
 // Initialize message variable
 $message = '';
+$valid_statuses = ['In Progress', 'Completed'];
+
+// Function to update order status
+function updateOrderStatus($conn, $order_id, $new_status, $total_kgs) {
+    $update_sql = "UPDATE orders SET status = ?, total_kgs = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param('sdi', $new_status, $total_kgs, $order_id);
+    
+    return $update_stmt->execute();
+}
 
 // Change order status to In Progress or Completed
 if (isset($_POST['update_order'])) {
-    $order_id = $_POST['order_id'];
-    $new_status = $_POST['status']; // Get selected status
+    $order_id = (int)$_POST['order_id'];
+    $new_status = $_POST['status'];
+    $total_kgs = (int)$_POST['total_kgs']; // Ensure it's an integer
 
-    // Update the order status
-    $update_sql = "UPDATE orders SET status = ? WHERE id = ?";
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param('si', $new_status, $order_id);
-
-    if ($update_stmt->execute()) {
-        $message = "Order status updated successfully.";
+    // Validate the new status
+    $valid_statuses = ['In Progress', 'Completed'];
+    if (!in_array($new_status, $valid_statuses)) {
+        $message = "Invalid status selected.";
     } else {
-        $message = "Error updating order status. Please try again.";
+        // Update the order status and total kilograms
+        $update_sql = "UPDATE orders SET status = ?, total_kgs = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param('sii', $new_status, $total_kgs, $order_id);
+
+        if ($update_stmt->execute()) {
+            $message = "Order updated successfully.";
+        } else {
+            $message = "Error updating order. Please try again.";
+        }
+        $update_stmt->close();
     }
 
-    // Clear cache and refresh orders
-    header("Location: staff_orders.php?message=" . urlencode($message)); // Redirect to the staff orders page with a message
+    // Redirect to the orders page with a message
+    header("Location: orders.php?message=" . urlencode($message));
     exit();
 }
 
 // Confirm payments
 if (isset($_POST['confirm_payment'])) {
-    $order_id = $_POST['order_id'];
+    $order_id = (int)$_POST['order_id']; // Ensure it's an integer
 
     // Update payment status
     $payment_sql = "UPDATE orders SET payment_status = 'Confirmed' WHERE id = ?";
@@ -49,27 +67,27 @@ if (isset($_POST['confirm_payment'])) {
         $message = "Error confirming payment. Please try again.";
     }
 
-    // Clear cache and refresh orders
-    header("Location: staff_orders.php?message=" . urlencode($message)); // Redirect to the staff orders page with a message
+    // Redirect to the orders page with a message
+    header("Location: orders.php?message=" . urlencode($message));
     exit();
 }
 
 // Fetch all orders assigned to this staff member
-$staff_id = $_SESSION['user_id']; // Assuming user_id is the same as staff_id
-$sql = "SELECT orders.id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status 
+$staff_id = (int)$_SESSION['user_id']; // Assuming user_id is the same as staff_id
+$sql = "SELECT orders.id, orders.order_id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status, orders.total_kgs 
         FROM orders 
-        WHERE staff_id = ?"; // Get orders assigned to the staff member
+        WHERE staff_id = ?";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Store the orders in an array
 $orders = [];
 while ($row = $result->fetch_assoc()) {
     $orders[] = $row;
 }
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -81,11 +99,6 @@ while ($row = $result->fetch_assoc()) {
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../admin/css/style.css">
-    <style>
-        .dashboard {
-            padding: 20px;
-        }
-    </style>
 </head>
 <body>
 
@@ -96,11 +109,10 @@ while ($row = $result->fetch_assoc()) {
 
 <section class="home">
     <div class="container mt-5">
-        <h1>Manage Your Orders</h1>
-
+        <h1>Manage Your Orders - (Staff ID: <?php echo htmlspecialchars($staff_id); ?>)</h1>
         <!-- Success/Error Message -->
         <?php if (!empty($message)): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div>
+            <div class="alert alert-info"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
 
         <!-- Orders Table Section -->
@@ -112,8 +124,11 @@ while ($row = $result->fetch_assoc()) {
                         <th scope="col">Customer Name</th>
                         <th scope="col">Pickup Time</th>
                         <th scope="col">Laundry Type</th>
+                        <th scope="col">Fabric Softener</th>
+                        <th scope="col">Special Instructions</th>
                         <th scope="col">Status</th>
                         <th scope="col">Payment Status</th>
+                        <th scope="col">Total Kgs</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -125,6 +140,8 @@ while ($row = $result->fetch_assoc()) {
                             <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
                             <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
+                            <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
+                            <td><?php echo htmlspecialchars($order['special_instructions']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                             <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
                             <td>
@@ -146,7 +163,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center">No orders found.</td>
+                            <td colspan="8" class="text-center">No orders found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
