@@ -39,12 +39,12 @@ foreach ($pending_orders_summary as $order) {
     $pending_summary[$order['status']] = $order['count'];
 }
 
-// Fetch active staff from users table (where role is either 'staff' or 'admin')
+// Fetch active staff from users table (where role is 'staff' or 'admin')
 $active_staff = $conn->query("
-    SELECT u.id, u.username, u.phone_number, u.role, u.created_at, s.payout 
-    FROM users u 
-    JOIN staff s ON u.id = s.user_id 
-    WHERE s.status = 'Active' AND (u.role = 'staff' OR u.role = 'admin')
+    SELECT id, username, phone_number, role, updated_at 
+    FROM users 
+    WHERE role IN ('staff', 'admin') 
+    AND status = 'Active'
 ")->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -177,37 +177,36 @@ $active_staff = $conn->query("
                 </ul>
             </div>
 
-            <!-- Active Staff Section -->
-            <div class="active-staff-section mt-5">
-                <h2 class="mb-4">Active Staff</h2>
-                <table class="table table-striped table-hover">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">Phone Number</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Payout</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($active_staff)): ?>
-                            <?php foreach ($active_staff as $staff): ?>
+                <!-- Active Staff Section -->
+                <div class="active-staff-section mt-5">
+                    <h2 class="mb-4">Active Staff</h2>
+                    <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
                             <tr>
-                                <td><?php echo htmlspecialchars($staff['username']); ?></td>
-                                <td><?php echo htmlspecialchars($staff['phone_number']); ?></td>
-                                <td><?php echo htmlspecialchars($staff['role']); ?></td>
-                                <td><?php echo htmlspecialchars($staff['payout']); ?></td>
+                                <th scope="col">Username</th>
+                                <th scope="col">Phone Number</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Payout</th>
                             </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" class="text-center">No active staff found.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($active_staff)): ?>
+                                <?php foreach ($active_staff as $staff): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($staff['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($staff['phone_number']); ?></td>
+                                    <td><?php echo htmlspecialchars($staff['role']); ?></td>
+                                    <td><?php echo htmlspecialchars($staff['payout'] ?? 'N/A'); ?></td> <!-- Updated line -->
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" class="text-center">No active staff found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
     </section>
 
 

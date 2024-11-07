@@ -74,3 +74,10 @@ CREATE TABLE settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE staff (
+    reg_number VARCHAR(50) PRIMARY KEY,  -- Use reg_number as the primary key, e.g., "RCLMS XXXX"
+    name VARCHAR(100) NOT NULL,           -- Staff member's full name
+    phone_number VARCHAR(15) NOT NULL,    -- Staff phone number
+    username VARCHAR(50) NOT NULL UNIQUE, -- Username for login, unique per staff
+    password VARCHAR(255) NOT NULL       -- Password for login
+);

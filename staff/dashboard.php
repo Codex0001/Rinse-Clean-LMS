@@ -16,12 +16,12 @@ require_once '../includes/rinseclean_lms.php';
 // Fetch staff ID from the session
 $staff_id = $_SESSION['user_id'];
 
-// Initialize variables for widgets
-$total_orders = 0; 
-$orders_in_progress = 0; 
-$total_payouts = 0; 
+// Initialize widget variables
+$total_orders = 0;
+$orders_in_progress = 0;
+$total_payouts = 0;
 
-// SQL query to count total orders
+// Query to get the total orders assigned to the staff member
 $sql = "SELECT COUNT(*) AS total_orders FROM orders WHERE staff_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
@@ -30,7 +30,7 @@ $stmt->bind_result($total_orders);
 $stmt->fetch();
 $stmt->close();
 
-// SQL query to count orders in progress
+// Query to get orders in progress
 $sql = "SELECT COUNT(*) AS orders_in_progress FROM orders WHERE staff_id = ? AND status = 'In Progress'";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
@@ -39,7 +39,7 @@ $stmt->bind_result($orders_in_progress);
 $stmt->fetch();
 $stmt->close();
 
-// SQL query to calculate total payouts
+// Query to calculate total earned payouts for completed orders
 $sql = "SELECT SUM(cost) AS total_payouts FROM orders WHERE staff_id = ? AND status = 'Completed'";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $staff_id);
@@ -48,7 +48,7 @@ $stmt->bind_result($total_payouts);
 $stmt->fetch();
 $stmt->close();
 
-// SQL query to fetch orders for the logged-in staff member
+// Query to fetch orders for the logged-in staff member
 $sql = "SELECT order_id, customer_name, pickup_time, laundry_type, status, fabric_softener, delivery_time 
         FROM orders 
         WHERE staff_id = ?";
@@ -158,12 +158,6 @@ $stmt->close();
                 </tbody>
             </table>
         </div>
-
-        <!-- Performance Overview Section -->
-        <div class="performance-section mt-5">
-            <h2>Performance Overview</h2>
-            <p>KPIs and Targets: <!-- Add your KPI and target details here --></p>
-        </div>
     </div>
 </section>
 
@@ -182,3 +176,4 @@ $stmt->close();
 </script>
 </body>
 </html>
+

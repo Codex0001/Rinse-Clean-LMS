@@ -16,7 +16,7 @@ $message = '';
 // Update order status and assign staff
 if (isset($_POST['update_order'])) {
     $order_id = $_POST['order_id'];
-    $staff_id = $_POST['staff_id']; // Get selected staff ID
+    $staff_id = $_POST['staff_id']; // Get selected staff ID from the dropdown
 
     // Set status to 'Scheduled' when staff is assigned
     $new_status = 'Scheduled';
@@ -31,16 +31,16 @@ if (isset($_POST['update_order'])) {
     } else {
         $message = "Error updating order. Please try again.";
     }
-    
+
     // Clear cache and refresh orders
     header("Location: orders.php?message=" . urlencode($message)); // Redirect to the orders page with a message
     exit();
 }
 
 // Fetch all orders from the database
-$sql = "SELECT orders.id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status, staff.name AS staff_name 
+$sql = "SELECT orders.id, orders.customer_name, orders.pickup_time, orders.laundry_type, orders.status, orders.fabric_softener, orders.payment_status, users.username AS staff_name 
         FROM orders 
-        LEFT JOIN staff ON orders.staff_id = staff.staff_id"; // Join staff to get staff names
+        LEFT JOIN users ON orders.staff_id = users.id"; // Join users to get staff names
 
 $result = $conn->query($sql);
 
@@ -64,8 +64,8 @@ if (isset($_POST['search'])) {
     }
 }
 
-// Fetch all staff members for the dropdown
-$staff_sql = "SELECT staff_id, name FROM staff";
+// Fetch all staff members for the dropdown from the users table
+$staff_sql = "SELECT id, username AS name FROM users WHERE role = 'staff'"; // Get only staff users
 $staff_result = $conn->query($staff_sql);
 $staff_members = [];
 while ($row = $staff_result->fetch_assoc()) {
@@ -143,7 +143,7 @@ while ($row = $staff_result->fetch_assoc()) {
                                     <select name="staff_id" class="form-select" required>
                                         <option value="">Assign Staff</option>
                                         <?php foreach ($staff_members as $staff): ?>
-                                            <option value="<?php echo $staff['staff_id']; ?>"><?php echo htmlspecialchars($staff['name']); ?></option>
+                                            <option value="<?php echo $staff['id']; ?>"><?php echo htmlspecialchars($staff['name']); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                     <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
