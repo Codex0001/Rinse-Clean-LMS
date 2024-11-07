@@ -85,8 +85,12 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $orders = [];
-while ($row = $result->fetch_assoc()) {
-    $orders[] = $row;
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $orders[] = $row;
+    }
+} else {
+    $message = "No orders found for this staff member.";
 }
 $stmt->close();
 ?>
