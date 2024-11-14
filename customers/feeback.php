@@ -31,10 +31,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Fetch order details for the specific order_id (if available)
+$order_id = isset($_GET['order_id']) ? $_GET['order_id'] : '';
+$order_details = [];
+if ($order_id) {
+    $order_sql = "SELECT order_id, laundry_type, status, cost FROM orders WHERE order_id = ?";
+    $order_stmt = $conn->prepare($order_sql);
+    $order_stmt->bind_param('s', $order_id); // Assuming order_id is a string (or modify the datatype accordingly)
+    $order_stmt->execute();
+    $result = $order_stmt->get_result();
+    if ($result->num_rows > 0) {
+        $order_details = $result->fetch_assoc();
+    }
+}
+
 // Fetch all feedback from the database
-$sql = "SELECT f.score, f.comments, f.created_at, c.username 
+$sql = "SELECT f.score, f.comments, f.created_at, c.username, o.order_id 
         FROM feedback f 
         JOIN customers c ON f.customer_id = c.id 
+        JOIN orders o ON f.order_id = o.order_id 
         ORDER BY f.created_at DESC";
 $result = $conn->query($sql);
 
@@ -74,12 +89,23 @@ if ($result->num_rows > 0) {
 <section class="home">
     <div class="dashboard">
         <div class="header-strip">
-            <h1> Customer Feedback</h1>
+            <h1>Customer Feedback</h1>
         </div>
 
         <!-- Feedback Form -->
         <form method="POST" action="feedback.php" class="mt-5">
-            <input type="hidden" name="order_id" value="<?php echo isset($_GET['order_id']) ? htmlspecialchars($_GET['order_id']) : ''; ?>"> <!-- Ensure order_id is passed -->
+            <input type="hidden" name="order_id" value="<?php echo isset($order_details['order_id']) ? htmlspecialchars($order_details['order_id']) : ''; ?>"> <!-- Ensure order_id is passed -->
+            
+            <?php if (!empty($order_details)): ?>
+                <div class="order-details">
+                    <h5>Order Details</h5>
+                    <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_details['order_id']); ?></p>
+                    <p><strong>Laundry Type:</strong> <?php echo htmlspecialchars($order_details['laundry_type']); ?></p>
+                    <p><strong>Status:</strong> <?php echo htmlspecialchars($order_details['status']); ?></p>
+                    <p><strong>Cost:</strong> <?php echo htmlspecialchars($order_details['cost']); ?></p>
+                </div>
+            <?php endif; ?>
+
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <select id="rating" name="rating" class="form-select" required>
@@ -120,6 +146,7 @@ if ($result->num_rows > 0) {
 
     </div>
 </section>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

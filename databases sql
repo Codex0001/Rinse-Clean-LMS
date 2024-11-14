@@ -9,16 +9,15 @@ CREATE TABLE IF NOT EXISTS customers (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    id INT NOT NULL AUTO_INCREMENT,              
+    id INT NOT NULL AUTO_INCREMENT,               
     order_id VARCHAR(20),                        
     customer_name VARCHAR(100) NOT NULL,         
     laundry_type VARCHAR(50) NOT NULL,          
     fabric_softener VARCHAR(100),                
     pickup_time DATETIME NOT NULL,               
-    delivery_time DATETIME NOT NULL,             
     special_instructions TEXT,                   
     status VARCHAR(20) DEFAULT 'Pending',        
-    total_kgs DECIMAL(5, 2),  
+    weight DECIMAL(5, 2),                        -- Direct weight input (in kilograms)
     cost DECIMAL(10, 2) NOT NULL,  
     payment_status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Ensure payment status is included
     staff_id INT, -- Foreign key to reference the staff responsible for the order
@@ -37,6 +36,7 @@ BEGIN
 END //
 
 DELIMITER ;
+
 
 
 CREATE TABLE users (
@@ -58,26 +58,42 @@ INSERT INTO users (username, password, email, phone_number, role)
 VALUES ('admin', 'securepassword123', 'admin@example.com', '1234567890', 'admin');
 
 
-CREATE TABLE settings (
+CREATE TABLE rates (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    wash_fold_rate DECIMAL(10, 2) NOT NULL, -- Rate in KES per kg
-    dry_cleaning_rate DECIMAL(10, 2) NOT NULL, -- Rate in KES per item
-    ironing_rate DECIMAL(10, 2), -- Added Ironing Rate in KES per item
-    bedding_rate DECIMAL(10, 2), -- Added Bedding & Linens Rate in KES
-    stain_removal_rate DECIMAL(10, 2), -- Added Stain Removal Rate in KES
-    specialty_fabric_rate DECIMAL(10, 2), -- Added Specialty Fabric Rate in KES
-    sms_notifications ENUM('enabled', 'disabled') DEFAULT 'enabled',
-    email_notifications ENUM('enabled', 'disabled') DEFAULT 'enabled',
+    wash_fold_rate DECIMAL(10, 2) NOT NULL,
+    dry_cleaning_rate DECIMAL(10, 2) NOT NULL,
+    ironing_rate DECIMAL(10, 2),
+    bedding_rate DECIMAL(10, 2),
+    stain_removal_rate DECIMAL(10, 2),
+    specialty_fabric_rate DECIMAL(10, 2),
     opening_time TIME NOT NULL,
     closing_time TIME NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp for tracking
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+INSERT INTO rates (wash_fold_rate, ironing_rate, bedding_rate, dry_cleaning_rate, stain_removal_rate, specialty_fabric_rate, opening_time, closing_time) 
+VALUES 
+(120.00, 50.00, 200.00, 100.00, 250.00, 300.00, '06:00 AM', '06:00 PM');
+
+
 CREATE TABLE staff (
-    reg_number VARCHAR(50) PRIMARY KEY,  -- Use reg_number as the primary key, e.g., "RCLMS XXXX"
-    name VARCHAR(100) NOT NULL,           -- Staff member's full name
-    phone_number VARCHAR(15) NOT NULL,    -- Staff phone number
-    username VARCHAR(50) NOT NULL UNIQUE, -- Username for login, unique per staff
-    password VARCHAR(255) NOT NULL       -- Password for login
+    reg_number VARCHAR(50) PRIMARY KEY,       -- Use reg_number as the primary key, e.g., "RCLMS XXXX"
+    name VARCHAR(100) NOT NULL,               -- Staff member's full name
+    phone_number VARCHAR(15) NOT NULL,        -- Staff phone number
+    username VARCHAR(50) NOT NULL UNIQUE,     -- Username for login, unique per staff
+    password VARCHAR(255) NOT NULL,           -- Password for login
+    status VARCHAR(20) DEFAULT 'active'       -- Status of the staff, with default value 'active'
+);
+
+
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    order_id INT,  -- Link to the order
+    score INT,
+    comments TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );

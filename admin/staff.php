@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="../admin/css/style.css"> 
 </head>
 <style>
-        .dashboard {
-            padding: 20px;
-        }
-    </style>
+    .dashboard {
+        padding: 20px;
+    }
+</style>
 <body>
 
 <div class="d-flex" id="wrapper">
@@ -51,7 +51,7 @@
                             include '../includes/rinseclean_lms.php'; // Adjust the path as needed
 
                             // Fetch the last registration number from the database
-                            $sql = "SELECT reg_number FROM staff ORDER BY staff_id DESC LIMIT 1";
+                            $sql = "SELECT reg_number FROM staff ORDER BY reg_number DESC LIMIT 1";
                             $result = $conn->query($sql);
                             $newRegNumber = 'RCML-EMP-0001'; // Default registration number for the first staff
 
@@ -104,7 +104,6 @@
             <table class="table table-striped table-hover">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col">Staff ID</th>
                         <th scope="col">Registration Number</th>
                         <th scope="col">Name</th>
                         <th scope="col">Status</th>
@@ -123,19 +122,18 @@
                     if ($result->num_rows > 0) {
                         while ($staff = $result->fetch_assoc()) {
                             echo "<tr>
-                                    <td>" . htmlspecialchars($staff['staff_id']) . "</td>
                                     <td>" . htmlspecialchars($staff['reg_number']) . "</td>
                                     <td>" . htmlspecialchars($staff['name']) . "</td>
                                     <td>" . htmlspecialchars($staff['status']) . "</td>
                                     <td>
-                                        <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#editStaffModal" . htmlspecialchars($staff['staff_id']) . "'>Edit</button>
-                                        <a href='deactivate_staff.php?id=" . htmlspecialchars($staff['staff_id']) . "' class='btn btn-danger' onclick='return confirmDeactivate();'>Deactivate</a>
+                                        <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#editStaffModal" . htmlspecialchars($staff['reg_number']) . "'>Edit</button>
+                                        <a href='deactivate_staff.php?id=" . htmlspecialchars($staff['reg_number']) . "' class='btn btn-danger' onclick='return confirmDeactivate();'>Deactivate</a>
                                     </td>
                                   </tr>";
                             ?>
 
                             <!-- Edit Staff Modal -->
-                            <div class="modal fade" id="editStaffModal<?php echo htmlspecialchars($staff['staff_id']); ?>" tabindex="-1" aria-labelledby="editStaffModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="editStaffModal<?php echo htmlspecialchars($staff['reg_number']); ?>" tabindex="-1" aria-labelledby="editStaffModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -144,7 +142,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <form action="edit_staff_process.php" method="POST">
-                                                <input type="hidden" name="staff_id" value="<?php echo htmlspecialchars($staff['staff_id']); ?>">
+                                                <input type="hidden" name="reg_number" value="<?php echo htmlspecialchars($staff['reg_number']); ?>">
                                                 <div class="mb-3">
                                                     <label for="name" class="form-label">Name</label>
                                                     <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($staff['name']); ?>" required>
@@ -175,7 +173,7 @@
                             <?php
                         }
                     } else {
-                        echo "<tr><td colspan='5' class='text-center'>No staff found.</td></tr>";
+                        echo "<tr><td colspan='4' class='text-center'>No staff found.</td></tr>";
                     }
 
                     $conn->close(); // Close the database connection
@@ -183,31 +181,15 @@
                 </tbody>
             </table>
         </div>
-
         
     </div>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-
-function showAlert(message, type) {
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type} alert-dismissible`;
-    alert.role = 'alert';
-    alert.innerHTML = message + `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-    alertPlaceholder.append(alert);
-}
-
-// Show alert message if present in URL parameters
-<?php if (isset($_GET['message'])): ?>
-    showAlert('<?php echo htmlspecialchars($_GET['message']); ?>', 'success');
-<?php elseif (isset($_GET['error'])): ?>
-    showAlert('<?php echo htmlspecialchars($_GET['error']); ?>', 'danger');
-<?php endif; ?>
-function confirmDeactivate() {
-            return confirm("Are you sure you want to deactivate this account?");
-        }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmDeactivate() {
+        return confirm("Are you sure you want to deactivate this staff member?");
+    }
 </script>
 </body>
 </html>

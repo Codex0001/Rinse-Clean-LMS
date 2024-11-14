@@ -118,7 +118,7 @@ while ($row = $recent_orders_result->fetch_assoc()) {
                             <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
-                            <td>$<?php echo htmlspecialchars(number_format($order['cost'], 2)); ?></td>
+                            <td>KSH <?php echo htmlspecialchars(number_format($order['cost'], 2)); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

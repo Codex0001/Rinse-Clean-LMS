@@ -1,3 +1,33 @@
+<?php 
+// Include database connection
+include '../includes/rinseclean_lms.php';
+
+// Fetch payment statistics
+$totalPayments = $totalAmount = $pendingPayments = $failedPayments = 0;
+
+// Query to fetch payment statistics
+$statsQuery = "SELECT 
+                  COUNT(*) as totalPayments, 
+                  SUM(amount) as totalAmount, 
+                  SUM(status = 'Pending') as pendingPayments, 
+                  SUM(status = 'Failed') as failedPayments 
+               FROM payments";
+$statsResult = $conn->query($statsQuery);
+
+if ($statsResult && $statsResult->num_rows > 0) {
+    $stats = $statsResult->fetch_assoc();
+    $totalPayments = $stats['totalPayments'];
+    $totalAmount = $stats['totalAmount'];
+    $pendingPayments = $stats['pendingPayments'];
+    $failedPayments = $stats['failedPayments'];
+}
+
+// Fetch payment overview data
+$paymentsQuery = "SELECT order_id, customer_name, amount, status, payment_date FROM payments";
+$paymentsResult = $conn->query($paymentsQuery);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +56,7 @@
                     <div class="card text-white bg-info">
                         <div class="card-body">
                             <h5 class="card-title">Total Payments</h5>
-                            <h3>120</h3> <!-- Fetch dynamically -->
+                            <h3><?php echo $totalPayments; ?></h3>
                         </div>
                     </div>
                 </div>
@@ -34,7 +64,7 @@
                     <div class="card text-white bg-success">
                         <div class="card-body">
                             <h5 class="card-title">Total Amount</h5>
-                            <h3>Ksh 150,000</h3> <!-- Fetch dynamically -->
+                            <h3>Ksh <?php echo number_format($totalAmount, 2); ?></h3>
                         </div>
                     </div>
                 </div>
@@ -42,7 +72,7 @@
                     <div class="card text-white bg-warning">
                         <div class="card-body">
                             <h5 class="card-title">Pending Payments</h5>
-                            <h3>10</h3> <!-- Fetch dynamically -->
+                            <h3><?php echo $pendingPayments; ?></h3>
                         </div>
                     </div>
                 </div>
@@ -50,7 +80,7 @@
                     <div class="card text-white bg-danger">
                         <div class="card-body">
                             <h5 class="card-title">Failed Payments</h5>
-                            <h3>5</h3> <!-- Fetch dynamically -->
+                            <h3><?php echo $failedPayments; ?></h3>
                         </div>
                     </div>
                 </div>
@@ -92,19 +122,29 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Populate rows dynamically from the database -->
-                            <tr>
-                                <td>RCLMS001</td>
-                                <td>John Doe</td>
-                                <td>1500</td>
-                                <td><span class="badge bg-success">Successful</span></td>
-                                <td>2024-10-10</td>
-                                <td>
-                                    <a href="edit_payment.php?payment_id=1" class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="delete_payment.php?payment_id=1" class="btn btn-danger btn-sm">Delete</a>
-                                </td>
-                            </tr>
-                            <!-- Add more rows dynamically -->
+                            <?php if ($paymentsResult && $paymentsResult->num_rows > 0): ?>
+                                <?php while ($payment = $paymentsResult->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?php echo $payment['order_id']; ?></td>
+                                        <td><?php echo $payment['customer_name']; ?></td>
+                                        <td>Ksh <?php echo number_format($payment['amount'], 2); ?></td>
+                                        <td>
+                                            <span class="badge bg-<?php echo $payment['status'] == 'Successful' ? 'success' : ($payment['status'] == 'Pending' ? 'warning' : 'danger'); ?>">
+                                                <?php echo $payment['status']; ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo $payment['payment_date']; ?></td>
+                                        <td>
+                                            <a href="edit_payment.php?payment_id=<?php echo $payment['order_id']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                                            <a href="delete_payment.php?payment_id=<?php echo $payment['order_id']; ?>" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6">No payment records found.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -117,9 +157,9 @@
                 </div>
                 <div class="card-body">
                     <ul>
-                        <li><strong>5 Pending Payments</strong> need confirmation.</li>
-                        <li><strong>2 Failed Payments</strong> require attention.</li>
-                        <li><strong>3 Payments</strong> received in the last 24 hours.</li>
+                        <li><strong><?php echo $pendingPayments; ?> Pending Payments</strong> need confirmation.</li>
+                        <li><strong><?php echo $failedPayments; ?> Failed Payments</strong> require attention.</li>
+                        <!-- Additional dynamic alerts can be added here -->
                     </ul>
                 </div>
             </div>
@@ -149,7 +189,18 @@
                         <div class="form-group mb-3">
                             <label for="order_id">Order ID</label>
                             <select class="form-control" id="order_id" name="order_id" required>
-                                <!-- Populate Order IDs dynamically -->
+                                <?php
+                                // Populate order IDs dynamically
+                                $orderQuery = "SELECT order_id FROM orders";
+                                $orderResult = $conn->query($orderQuery);
+                                if ($orderResult && $orderResult->num_rows > 0):
+                                    while ($order = $orderResult->fetch_assoc()):
+                                ?>
+                                    <option value="<?php echo $order['order_id']; ?>"><?php echo $order['order_id']; ?></option>
+                                <?php 
+                                    endwhile;
+                                endif;
+                                ?>
                             </select>
                         </div>
                         <div class="form-group mb-3">
@@ -158,7 +209,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label for="amount">Amount</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
                         </div>
                         <div class="form-group mb-3">
                             <label for="status">Status</label>
@@ -168,19 +219,14 @@
                                 <option value="Failed">Failed</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="submit" class="btn btn-primary">Save Payment</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer inclusion -->
-    <?php include '../admin/publics/footer.php'; ?>
-
-    <!-- JS files -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="path_to_jquery.js"></script>
-    <script src="path_to_custom_scripts.js"></script>
 </body>
 </html>

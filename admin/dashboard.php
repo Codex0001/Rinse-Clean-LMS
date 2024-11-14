@@ -39,13 +39,6 @@ foreach ($pending_orders_summary as $order) {
     $pending_summary[$order['status']] = $order['count'];
 }
 
-// Fetch active staff from users table (where role is 'staff' or 'admin')
-$active_staff = $conn->query("
-    SELECT id, username, phone_number, role, updated_at 
-    FROM users 
-    WHERE role IN ('staff', 'admin') 
-    AND status = 'Active'
-")->fetch_all(MYSQLI_ASSOC);
 ?>
 
 

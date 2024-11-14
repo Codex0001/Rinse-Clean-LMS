@@ -1,68 +1,80 @@
 <?php
 // Include database connection
-include '../includes/rinseclean_lms.php'; // Adjust the path as necessary
+include '../includes/rinseclean_lms.php'; 
 
+// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Prepare and bind parameters
-    $wash_fold_rate = $_POST['wash_fold_rate'];
-    $dry_cleaning_rate = $_POST['dry_cleaning_rate'];
-    $ironing_rate = $_POST['ironing_rate'];
-    $bedding_rate = $_POST['bedding_rate'];
-    $stain_removal_rate = $_POST['stain_removal_rate'];
-    $specialty_fabric_rate = $_POST['specialty_fabric_rate'];
-    $sms_notifications = $_POST['sms_notifications'];
-    $email_notifications = $_POST['email_notifications'];
-    $opening_time = $_POST['opening_time'];
-    $closing_time = $_POST['closing_time'];
+    // Retrieve form data and sanitize it
+    $wash_fold_rate = htmlspecialchars(trim($_POST['wash_fold_rate']));
+    $dry_cleaning_rate = htmlspecialchars(trim($_POST['dry_cleaning_rate']));
+    $ironing_rate = htmlspecialchars(trim($_POST['ironing_rate']));
+    $bedding_rate = htmlspecialchars(trim($_POST['bedding_rate']));
+    $stain_removal_rate = htmlspecialchars(trim($_POST['stain_removal_rate']));
+    $specialty_fabric_rate = htmlspecialchars(trim($_POST['specialty_fabric_rate']));
+    $opening_time = htmlspecialchars(trim($_POST['opening_time']));
+    $closing_time = htmlspecialchars(trim($_POST['closing_time']));
 
-    // Debug: Check if we are connected to the correct database
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    // Validate required fields
+    if (empty($wash_fold_rate) || empty($dry_cleaning_rate) || empty($ironing_rate) || empty($bedding_rate) || empty($stain_removal_rate) || empty($specialty_fabric_rate) || empty($opening_time) || empty($closing_time)) {
+        die("Please fill in all required fields.");
     }
 
-    // Update query for the settings table
-    $query = "UPDATE settings SET
-        wash_fold_rate = ?, 
-        dry_cleaning_rate = ?, 
-        ironing_rate = ?,
-        bedding_rate = ?, 
-        stain_removal_rate = ?, 
-        specialty_fabric_rate = ?,
-        sms_notifications = ?, 
-        email_notifications = ?,
-        opening_time = ?, 
-        closing_time = ? 
-        WHERE id = 1"; // Assuming there's only one row to update
+    // Start a transaction
+    $conn->begin_transaction();
 
-    // Debug: Output the query to check its correctness
-    echo "Query: " . $query . "<br>";
+    try {
+        // Prepare the SQL update query for the rates
+        $stmt = $conn->prepare("UPDATE rates SET
+            wash_fold_rate = ?, 
+            dry_cleaning_rate = ?, 
+            ironing_rate = ?,
+            bedding_rate = ?, 
+            stain_removal_rate = ?, 
+            specialty_fabric_rate = ?, 
+            opening_time = ?, 
+            closing_time = ? 
+            WHERE id = 1"); // Assuming there's only one row in the rates table
 
-    $stmt = $conn->prepare($query);
-    if ($stmt === false) {
-        die("Prepare failed: " . htmlspecialchars($conn->error));
-    }
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . htmlspecialchars($conn->error));
+        }
 
-    // Bind parameters
-    $stmt->bind_param("ddddssssss", 
-        $wash_fold_rate, 
-        $dry_cleaning_rate, 
-        $ironing_rate, 
-        $bedding_rate, 
-        $stain_removal_rate, 
-        $specialty_fabric_rate, 
-        $sms_notifications, 
-        $email_notifications, 
-        $opening_time, 
-        $closing_time);
-    
-    if ($stmt->execute()) {
+        // Bind parameters for the update
+        $stmt->bind_param("ddddssss", 
+            $wash_fold_rate, 
+            $dry_cleaning_rate, 
+            $ironing_rate, 
+            $bedding_rate, 
+            $stain_removal_rate, 
+            $specialty_fabric_rate, 
+            $opening_time, 
+            $closing_time
+        );
+
+        // Execute the statement and check for errors
+        if (!$stmt->execute()) {
+            throw new Exception("Error executing query: " . htmlspecialchars($stmt->error));
+        }
+
+        // Commit the transaction
+        $conn->commit();
+
+        // Redirect to the settings page with success message
         header("Location: settings.php?update=success");
-        exit(); // It's a good practice to exit after a redirect
-    } else {
-        echo "Error updating settings: " . htmlspecialchars($stmt->error);
+        exit;
+
+    } catch (Exception $e) {
+        // Roll back the transaction if an error occurs
+        $conn->rollback();
+        echo "Error: " . $e->getMessage();
     }
 
+    // Close the statement and connection
     $stmt->close();
     $conn->close();
+} else {
+    // Redirect to settings page if accessed directly
+    header("Location: settings.php");
+    exit;
 }
-
+?>

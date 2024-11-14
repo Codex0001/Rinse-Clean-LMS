@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../includes/rinseclean_lms.php'; // Include your database connection file
-require_once '../twilio/send_sms.php'; // Include the Twilio SMS sending functionality
+// require_once '../twilio/send_sms.php'; // Commented out temporarily while we focus on other parts
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the form data
@@ -37,12 +37,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($insert_stmt->execute()) {
         // Registration successful - Now send the SMS notification
+        // Temporarily commented out until we fix the SMS issue
+        /*
         $data = ['username' => $username];
         if (sendCustomSMS($phone_number, 'registration_success', $data)) {
             $_SESSION['success'] = "Registration successful! You can now log in. SMS notification sent.";
         } else {
             $_SESSION['success'] = "Registration successful! But there was an issue sending the SMS notification.";
         }
+        */
+
+        $_SESSION['success'] = "Registration successful! You can now log in."; // Default success message without SMS
         
         // Redirect to the login page after success
         header("Location: ../public/login/login.php");

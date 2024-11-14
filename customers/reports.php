@@ -18,13 +18,25 @@ $customer_id = $_SESSION['user_id'];
 
 // Updated SQL query to fetch orders for the logged-in customer, including payment status
 $sql = "SELECT orders.order_id AS order_number, orders.pickup_time AS date, orders.laundry_type AS service, 
-        orders.status, orders.total_kgs, orders.cost, orders.payment_status 
+        orders.status, orders.weight, orders.cost, orders.payment_status 
         FROM orders 
         WHERE orders.customer_name = ?";
 
+// Prepare the SQL statement
 $stmt = $conn->prepare($sql);
+
+// Check if the prepare failed
+if ($stmt === false) {
+    die('Error preparing the SQL statement: ' . $conn->error);
+}
+
+// Bind parameters
 $stmt->bind_param('s', $customer_name); // Bind customer_name
+
+// Execute the query
 $stmt->execute();
+
+// Get the result
 $result = $stmt->get_result();
 
 // Store the orders in an array
@@ -146,7 +158,7 @@ $message = empty($orders) ? "No orders found for your account." : "";
                         <th scope="col">Order Number</th>
                         <th scope="col">Pickup Time</th>
                         <th scope="col">Laundry Type</th>
-                        <th scope="col">Total Kgs</th>
+                        <th scope="col">weight</th>
                         <th scope="col">Cost</th>
                         <th scope="col">Status</th>
                         <th scope="col">Payment Status</th> <!-- Added Payment Status -->
@@ -158,7 +170,7 @@ $message = empty($orders) ? "No orders found for your account." : "";
                         <td><?php echo htmlspecialchars($order['order_number']); ?></td>
                         <td><?php echo htmlspecialchars($order['date']); ?></td>
                         <td><?php echo htmlspecialchars($order['service']); ?></td>
-                        <td><?php echo htmlspecialchars($order['total_kgs']); ?></td>
+                        <td><?php echo htmlspecialchars($order['weight']); ?></td>
                         <td><?php echo htmlspecialchars($order['cost']); ?></td>
                         <td><?php echo htmlspecialchars($order['status']); ?></td>
                         <td><?php echo htmlspecialchars($order['payment_status']); ?></td> <!-- Displaying Payment Status -->

@@ -24,6 +24,9 @@ $total_payouts = 0;
 // Query to get the total orders assigned to the staff member
 $sql = "SELECT COUNT(*) AS total_orders FROM orders WHERE staff_id = ?";
 $stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die('Error preparing query: ' . $conn->error);
+}
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
 $stmt->bind_result($total_orders);
@@ -33,6 +36,9 @@ $stmt->close();
 // Query to get orders in progress
 $sql = "SELECT COUNT(*) AS orders_in_progress FROM orders WHERE staff_id = ? AND status = 'In Progress'";
 $stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die('Error preparing query: ' . $conn->error);
+}
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
 $stmt->bind_result($orders_in_progress);
@@ -42,6 +48,9 @@ $stmt->close();
 // Query to calculate total earned payouts for completed orders
 $sql = "SELECT SUM(cost) AS total_payouts FROM orders WHERE staff_id = ? AND status = 'Completed'";
 $stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die('Error preparing query: ' . $conn->error);
+}
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
 $stmt->bind_result($total_payouts);
@@ -49,10 +58,13 @@ $stmt->fetch();
 $stmt->close();
 
 // Query to fetch orders for the logged-in staff member
-$sql = "SELECT order_id, customer_name, pickup_time, laundry_type, status, fabric_softener, delivery_time 
+$sql = "SELECT id AS order_id, customer_name, pickup_time, laundry_type, status, fabric_softener
         FROM orders 
         WHERE staff_id = ?";
 $stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die('Error preparing query: ' . $conn->error);
+}
 $stmt->bind_param('i', $staff_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -134,7 +146,6 @@ $stmt->close();
                         <th scope="col">Laundry Type</th>
                         <th scope="col">Status</th>
                         <th scope="col">Fabric Softener</th>
-                        <th scope="col">Delivery Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,7 +158,6 @@ $stmt->close();
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                             <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
-                            <td><?php echo htmlspecialchars($order['delivery_time']); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -176,4 +186,3 @@ $stmt->close();
 </script>
 </body>
 </html>
-

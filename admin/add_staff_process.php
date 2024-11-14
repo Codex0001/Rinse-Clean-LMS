@@ -1,6 +1,6 @@
 <?php
 // Include database connection
-include '../includes/rinseclean_lms.php'; // Adjust the path as needed
+include '../includes/rinseclean_lms.php'; 
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -8,36 +8,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $reg_number = htmlspecialchars(trim($_POST['reg_number']));
     $name = htmlspecialchars(trim($_POST['name']));
     $phone_number = htmlspecialchars(trim($_POST['phone_number']));
-    $address = htmlspecialchars(trim($_POST['address']));
     $username = htmlspecialchars(trim($_POST['username']));
-    $password = htmlspecialchars(trim($_POST['password'])); // Store password as plain text
+    $password = htmlspecialchars(trim($_POST['password'])); // Store password as plain text for now
+    $role = 'staff'; // Role for users table entry
 
-    // Validate the required fields
+    // Validate required fields
     if (empty($reg_number) || empty($name) || empty($phone_number) || empty($username) || empty($password)) {
         die("Please fill in all required fields.");
     }
 
-    // Prepare an SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("INSERT INTO staff (reg_number, name, phone_number, address, username, password) VALUES (?, ?, ?, ?, ?, ?)");
+    // Start a transaction
+    $conn->begin_transaction();
 
-    // Adjust the number of parameters in bind_param to match the SQL statement
-    $stmt->bind_param("ssssss", $reg_number, $name, $phone_number, $address, $username, $password);
+    try {
+        // Insert into staff table
+        $stmt_staff = $conn->prepare("INSERT INTO staff (reg_number, name, phone_number, username, password) VALUES (?, ?, ?, ?, ?)");
+        $stmt_staff->bind_param("sssss", $reg_number, $name, $phone_number, $username, $password);
+        
+        if (!$stmt_staff->execute()) {
+            throw new Exception("Failed to insert into staff table: " . $stmt_staff->error);
+        }
 
-    // Execute the statement and check if the insertion was successful
-    if ($stmt->execute()) {
+        // Insert into users table
+        $stmt_users = $conn->prepare("INSERT INTO users (username, password, email, phone_number, role, reg_number, name, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')");
+        $email = ''; // Placeholder for email if not provided
+        $stmt_users->bind_param("sssssss", $username, $password, $email, $phone_number, $role, $reg_number, $name);
+        
+        if (!$stmt_users->execute()) {
+            throw new Exception("Failed to insert into users table: " . $stmt_users->error);
+        }
+
+        // Commit transaction if both inserts are successful
+        $conn->commit();
+
         // Redirect to staff management page with success message
-        header("Location: staff_management.php?message=Staff added successfully!");
+        header("Location: staff.php?message=Staff added successfully!");
         exit;
-    } else {
-        // Handle error
-        echo "Error: " . $stmt->error;
+
+    } catch (Exception $e) {
+        // Roll back the transaction if any insert fails
+        $conn->rollback();
+        echo "Error: " . $e->getMessage();
     }
 
-    // Close the statement and connection
-    $stmt->close();
+    // Close statements and connection
+    $stmt_staff->close();
+    $stmt_users->close();
     $conn->close();
 } else {
     // Redirect to the staff management page if accessed directly
     header("Location: staff.php");
     exit;
 }
+?>
