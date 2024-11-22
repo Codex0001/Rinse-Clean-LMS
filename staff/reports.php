@@ -90,9 +90,14 @@ while ($row = $recent_orders_result->fetch_assoc()) {
                 </div>
             </div>
         </div>
-
-        <!-- Recent Orders Table Section -->
+           <!--Recent Orders Table Section -->
         <div class="recent-orders-section mt-5">
+            <!-- Download Report Button -->
+<div class="mb-3">
+    <form method="POST" action="../staff/download_staff_report.php">
+        <button type="submit" class="btn btn-success">Download Report</button>
+    </form>
+</div>
             <h2 class="mb-4">Recent Orders</h2>
             <table class="table table-striped table-hover">
                 <thead class="thead-dark">

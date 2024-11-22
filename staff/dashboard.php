@@ -45,18 +45,29 @@ $stmt->bind_result($orders_in_progress);
 $stmt->fetch();
 $stmt->close();
 
-// Query to calculate total earned payouts for completed orders
-$sql = "SELECT SUM(cost) AS total_payouts FROM orders WHERE staff_id = ? AND status = 'Completed'";
+// Step 1: Fetch the reg_number using the staff_id
+$sql = "SELECT reg_number FROM staff WHERE reg_number = ?";
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     die('Error preparing query: ' . $conn->error);
 }
-$stmt->bind_param('i', $staff_id);
+$stmt->bind_param('i', $staff_id); // Use the staff_id from session
 $stmt->execute();
-$stmt->bind_result($total_payouts);
+$stmt->bind_result($staff_reg_number); // Fetch the reg_number
 $stmt->fetch();
 $stmt->close();
 
+// Step 2: Fetch the salary using the reg_number
+$sql = "SELECT salary FROM staff WHERE reg_number = ?";
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die('Error preparing query: ' . $conn->error);
+}
+$stmt->bind_param('s', $staff_reg_number); // Bind reg_number as a string
+$stmt->execute();
+$stmt->bind_result($total_salary); // Store the result in $total_salary
+$stmt->fetch();
+$stmt->close();
 // Query to fetch orders for the logged-in staff member
 $sql = "SELECT id AS order_id, customer_name, pickup_time, laundry_type, status, fabric_softener
         FROM orders 
@@ -106,12 +117,6 @@ $stmt->close();
             <h1>Welcome, <?php echo $staff_name; ?>!</h1>
         </div>
         
-        <!-- Clock-in/Clock-out Section -->
-        <div class="clock-section my-3">
-            <button class="btn btn-success" id="clock-in-btn" title="Click to Clock In">Clock In</button>
-            <button class="btn btn-danger" id="clock-out-btn" title="Click to Clock Out">Clock Out</button>
-        </div>
-
         <!-- Widgets Section -->
         <div class="row mt-4">
             <div class="col-lg-4">
@@ -128,8 +133,8 @@ $stmt->close();
             </div>
             <div class="col-lg-4">
                 <div class="widget bg-success text-white p-3 rounded">
-                    <h2>Total Earned Payouts</h2>
-                    <p class="h1" id="total-payouts"><?php echo number_format($total_payouts, 2); ?></p>
+                    <h2>Salary</h2>
+                    <p class="h1" id="total_salary">Ksh <?php echo number_format($total_salary, 2); ?></p>
                 </div>
             </div>
         </div>
@@ -172,17 +177,6 @@ $stmt->close();
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Add functionality for clock-in and clock-out buttons here
-    document.getElementById('clock-in-btn').addEventListener('click', function() {
-        // Logic to handle clock-in (e.g., AJAX request)
-        alert("Clock In functionality to be implemented.");
-    });
 
-    document.getElementById('clock-out-btn').addEventListener('click', function() {
-        // Logic to handle clock-out (e.g., AJAX request)
-        alert("Clock Out functionality to be implemented.");
-    });
-</script>
 </body>
 </html>

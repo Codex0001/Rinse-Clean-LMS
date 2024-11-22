@@ -19,8 +19,6 @@ class PDF extends FPDF
 
         // Add space before the table
         $this->Ln(5);
-        // Add space before the table
-        $this->Ln(5);
 
         // Address and current date/time
         $this->SetFont('Arial', '', 10);
@@ -65,7 +63,7 @@ if ($result === false) {
     while ($row = $result->fetch_assoc()) {
         $pdf->Cell(40, 10, $row['reg_number'], 1);
         $pdf->Cell(50, 10, $row['name'], 1);
-        $pdf->Cell(40, 10, $row['salary_status'], 1); // Display the salary status
+        $pdf->Cell(40, 10, $row['salary_status'], 1);
         $pdf->Cell(30, 10, number_format($row['salary'], 2), 1, 1); // Display the salary
     }
 } else {
