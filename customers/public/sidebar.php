@@ -20,8 +20,9 @@
     <header>
         <div class="image-text">
             <span class="image">
-                <img src="../../assets/images/icons/laundry-machine.png" alt="logo" style="width: 50px; height: 50px;">
+            <i class='bx bx-loader icon' alt="logo" style="width: 50px; height: 50px;"></i>
             </span>
+
 
             <div class="text logo-text">
                 <span class="name">Rinse Clean</span>

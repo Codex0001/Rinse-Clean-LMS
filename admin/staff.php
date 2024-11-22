@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../admin/css/style.css"> 
+    <link rel="stylesheet" href="../admin/css/style.css">
 </head>
 <style>
     .dashboard {
@@ -28,7 +28,7 @@
             <h1>Staff Management</h1>
         </div>
 
-       <!-- Add Staff Button -->
+        <!-- Add Staff Button -->
         <div class="text-end mt-3">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">Add Staff</button>
         </div>
@@ -48,7 +48,7 @@
                         <form action="add_staff_process.php" method="POST">
                             <?php
                             // Include database connection
-                            include '../includes/rinseclean_lms.php'; // Adjust the path as needed
+                            include '../includes/rinseclean_lms.php';
 
                             // Fetch the last registration number from the database
                             $sql = "SELECT reg_number FROM staff ORDER BY reg_number DESC LIMIT 1";
@@ -57,7 +57,6 @@
 
                             if ($result->num_rows > 0) {
                                 $lastRegNumber = $result->fetch_assoc()['reg_number'];
-                                // Extract the numeric part and increment it
                                 $lastNum = (int)substr($lastRegNumber, strrpos($lastRegNumber, '-') + 1);
                                 $nextNum = $lastNum + 1;
 
@@ -78,6 +77,10 @@
                             <div class="mb-3">
                                 <label for="phone_number" class="form-label">Phone Number</label>
                                 <input type="text" class="form-control" name="phone_number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
                             </div>
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address</label>
@@ -106,6 +109,7 @@
                     <tr>
                         <th scope="col">Registration Number</th>
                         <th scope="col">Name</th>
+                        <th scope="col">Phone Number</th>
                         <th scope="col">Status</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -113,7 +117,7 @@
                 <tbody>
                     <?php
                     // Include database connection
-                    include '../includes/rinseclean_lms.php'; // Adjust the path as needed
+                    include '../includes/rinseclean_lms.php';
 
                     // Fetch current staff from the database
                     $sql = "SELECT * FROM staff";
@@ -124,15 +128,16 @@
                             echo "<tr>
                                     <td>" . htmlspecialchars($staff['reg_number']) . "</td>
                                     <td>" . htmlspecialchars($staff['name']) . "</td>
+                                    <td>" . htmlspecialchars($staff['phone_number']) . "</td>
                                     <td>" . htmlspecialchars($staff['status']) . "</td>
                                     <td>
                                         <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#editStaffModal" . htmlspecialchars($staff['reg_number']) . "'>Edit</button>
                                         <a href='deactivate_staff.php?id=" . htmlspecialchars($staff['reg_number']) . "' class='btn btn-danger' onclick='return confirmDeactivate();'>Deactivate</a>
                                     </td>
                                   </tr>";
-                            ?>
 
-                            <!-- Edit Staff Modal -->
+                            // Edit Staff Modal
+                            ?>
                             <div class="modal fade" id="editStaffModal<?php echo htmlspecialchars($staff['reg_number']); ?>" tabindex="-1" aria-labelledby="editStaffModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -148,32 +153,27 @@
                                                     <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($staff['name']); ?>" required>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="username" class="form-label">Username</label>
-                                                    <input type="text" class="form-control" name="username" value="<?php echo htmlspecialchars($staff['username']); ?>" required>
-                                                </div>
-                                                <div class="mb-3">
                                                     <label for="phone_number" class="form-label">Phone Number</label>
                                                     <input type="text" class="form-control" name="phone_number" value="<?php echo htmlspecialchars($staff['phone_number']); ?>" required>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="address" class="form-label">Address</label>
-                                                    <textarea class="form-control" name="address"><?php echo htmlspecialchars($staff['address']); ?></textarea>
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars(isset($staff['email']) ? $staff['email'] : ''); ?>" required>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="password" class="form-label">Password</label>
-                                                    <input type="password" class="form-control" name="password" placeholder="Leave blank to keep current password">
+                                                    <label for="address" class="form-label">Address</label>
+                                                    <textarea class="form-control" name="address"><?php echo htmlspecialchars(isset($staff['address']) ? $staff['address'] : ''); ?></textarea>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary">Update Staff</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <?php
                         }
                     } else {
-                        echo "<tr><td colspan='4' class='text-center'>No staff found.</td></tr>";
+                        echo "<tr><td colspan='7' class='text-center'>No staff found.</td></tr>";
                     }
 
                     $conn->close(); // Close the database connection
@@ -181,15 +181,16 @@
                 </tbody>
             </table>
         </div>
-        
     </div>
 </section>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function confirmDeactivate() {
-        return confirm("Are you sure you want to deactivate this staff member?");
+        return confirm("Are you sure you want to deactivate this staff?");
     }
 </script>
+
 </body>
 </html>

@@ -16,7 +16,7 @@
         <header>
             <div class="image-text">
                 <span class="image">
-                    <img src="laundry-machine.png" alt="logo" style="width: 50px; height: 50px;">
+                <i class='bx bx-loader icon' alt="logo" style="width: 50px; height: 50px;"></i>
                 </span>
                 <div class="text logo-text">
                     <span class="name">Rinse Clean</span>
@@ -63,9 +63,9 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="payments.php">
+                        <a href="salary.php">
                             <i class='bx bx-credit-card icon'></i>
-                            <span class="text nav-text">Payments</span>
+                            <span class="text nav-text">salary</span>
                         </a>
                     </li>
                     <li class="nav-link submenu-toggle">

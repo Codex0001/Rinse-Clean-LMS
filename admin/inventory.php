@@ -97,12 +97,5 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer inclusion -->
-    <?php include '../admin/publics/footer.php'; ?>
-
-    <!-- Additional JS files -->
-    <script src="path_to_jquery.js"></script>
-    <script src="path_to_bootstrap.js"></script>
 </body>
 </html>

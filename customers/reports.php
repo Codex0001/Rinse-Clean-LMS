@@ -57,8 +57,7 @@ $message = empty($orders) ? "No orders found for your account." : "";
     <title>Customer | Reports</title>
     <link rel="shortcut icon" href="../assets/images/icons/laundry-machine.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <!-- Customers CSS -->
-    <link rel="stylesheet" href="../customers/css/style.css"> 
+    <link rel="stylesheet" href="../customers/css/style.css">
     <style>
         /* Custom styles for the reports page */
         body {
@@ -151,37 +150,59 @@ $message = empty($orders) ? "No orders found for your account." : "";
             <h2 class="mb-4">Your Orders</h2>
             <?php if ($message): ?>
                 <div class="alert alert-warning"><?php echo $message; ?></div>
+            <?php else: ?>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Order Number</th>
+                            <th scope="col">Pickup Time</th>
+                            <th scope="col">Laundry Type</th>
+                            <th scope="col">Weight</th>
+                            <th scope="col">Cost</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Payment Status</th>
+                            <th scope="col">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($order['order_number']); ?></td>
+                            <td><?php echo htmlspecialchars($order['date']); ?></td>
+                            <td><?php echo htmlspecialchars($order['service']); ?></td>
+                            <td><?php echo htmlspecialchars($order['weight']); ?></td>
+                            <td><?php echo htmlspecialchars($order['cost']); ?></td>
+                            <td><?php echo htmlspecialchars($order['status']); ?></td>
+                            <td><?php echo htmlspecialchars($order['payment_status']); ?></td>
+                            <td><a href="./order_receipt.php?order_id=<?php echo urlencode($order['order_number']); ?>" class="btn btn-success btn-sm">Download</a></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             <?php endif; ?>
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Order Number</th>
-                        <th scope="col">Pickup Time</th>
-                        <th scope="col">Laundry Type</th>
-                        <th scope="col">weight</th>
-                        <th scope="col">Cost</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Payment Status</th> <!-- Added Payment Status -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($order['order_number']); ?></td>
-                        <td><?php echo htmlspecialchars($order['date']); ?></td>
-                        <td><?php echo htmlspecialchars($order['service']); ?></td>
-                        <td><?php echo htmlspecialchars($order['weight']); ?></td>
-                        <td><?php echo htmlspecialchars($order['cost']); ?></td>
-                        <td><?php echo htmlspecialchars($order['status']); ?></td>
-                        <td><?php echo htmlspecialchars($order['payment_status']); ?></td> <!-- Displaying Payment Status -->
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
         </div>
     </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+        document.getElementById('filter-button').addEventListener('click', function () {
+        const search = document.getElementById('search').value.trim().toLowerCase(); // Get the search input and convert to lowercase
+        const rows = document.querySelectorAll('.orders-section tbody tr'); // Select all rows in the table body
+
+        // Loop through each row and check if it matches the search criteria
+        rows.forEach(row => {
+            const orderNumber = row.children[0].textContent.toLowerCase(); // Order number column
+            const service = row.children[2].textContent.toLowerCase(); // Service column
+
+            // Check if the search input matches either the order number or service
+            if (orderNumber.includes(search) || service.includes(search)) {
+                row.style.display = ''; // Show the row
+            } else {
+                row.style.display = 'none'; // Hide the row
+            }
+        });
+    });
+</script>
 </body>
 </html>

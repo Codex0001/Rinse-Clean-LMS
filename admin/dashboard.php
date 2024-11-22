@@ -39,9 +39,10 @@ foreach ($pending_orders_summary as $order) {
     $pending_summary[$order['status']] = $order['count'];
 }
 
+// Fetch active staff count
+$query = "SELECT COUNT(*) as active_staff_count FROM staff";
+$active_staff_count = $conn->query($query)->fetch_assoc()['active_staff_count'];
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +57,7 @@ foreach ($pending_orders_summary as $order) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
     <style>
         .dashboard {
-            padding: 20px;
+            padding: 15px;
         }
     </style>
 </head>
@@ -90,29 +91,50 @@ foreach ($pending_orders_summary as $order) {
                     ?>
                 </h1>
             </div>
+                    <!--widget section-->
+            <div class="row mt-1">
+                <!-- Total Customers Widget -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Customers</h5>
+                            <p id="total-customers"><?php echo htmlspecialchars($total_customers); ?></p>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Widgets Section -->
-            <div class="row mt-4">
-                <div class="col-lg-3">
-                    <div class="widget bg-primary text-white p-3">
-                        <h2>Total Customers</h2>
-                        <p id="total-customers"><?php echo htmlspecialchars($total_customers); ?></p>
+                <!-- Profit / Loss Widget -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Profit / Loss</h5>
+                            <p id="total-revenue">Ksh<?php echo htmlspecialchars($total_revenue); ?> (Profit)</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="widget bg-warning text-white p-3">
-                        <h2>Orders In Progress</h2>
-                        <p id="orders-in-progress"><?php echo htmlspecialchars($orders_in_progress); ?></p>
+
+                    <!-- Orders In Progress Widget -->
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger">
+                        <div class="card-body">
+                            <h5 class="card-title">Orders In Progress</h5>
+                            <p id="orders-in-progress"><?php echo htmlspecialchars($orders_in_progress); ?></p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="widget bg-success text-white p-3">
-                        <h2>Profit / Loss</h2>
-                        <p id="total-revenue"><?php echo htmlspecialchars($total_revenue); ?> (Profit)</p>
+
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Active Staff</h5>
+                            <p id="active-staff"><?php echo htmlspecialchars($active_staff_count); ?></p>
+                        </div>
                     </div>
                 </div>
+
+
             </div>
-
+            
             <!-- Revenue Over Time and Customer Feedback Scores Chart -->
             <div class="row mt-4">
                 <div class="col-lg-6">
@@ -157,48 +179,27 @@ foreach ($pending_orders_summary as $order) {
             </div>
 
             <!-- Pending Orders Summary Section -->
-            <div class="pending-orders-summary mt-5">
-                <h2 class="mb-4">Pending Orders Summary</h2>
-                <ul class="list-group">
-                    <?php
-                    $statuses = ['Pending', 'In Progress', 'Completed'];
-                    foreach ($statuses as $status) {
-                        $count = isset($pending_summary[$status]) ? $pending_summary[$status] : 0;
-                        echo "<li class='list-group-item'>${status}: ${count}</li>";
-                    }
-                    ?>
-                </ul>
-            </div>
-
-                <!-- Active Staff Section -->
-                <div class="active-staff-section mt-5">
-                    <h2 class="mb-4">Active Staff</h2>
-                    <table class="table table-striped table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Username</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Payout</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($active_staff)): ?>
-                                <?php foreach ($active_staff as $staff): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($staff['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($staff['phone_number']); ?></td>
-                                    <td><?php echo htmlspecialchars($staff['role']); ?></td>
-                                    <td><?php echo htmlspecialchars($staff['payout'] ?? 'N/A'); ?></td> <!-- Updated line -->
-                                </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="4" class="text-center">No active staff found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                <div class="pending-orders-summary mt-5">
+                    <h2 class="mb-4">Pending Orders Summary</h2>
+                    <div class="row">
+                        <?php
+                        $statuses = ['Pending', 'In Progress', 'Completed'];
+                        $colors = ['warning', 'info', 'success']; // Corresponding colors for cards
+                        foreach ($statuses as $index => $status) {
+                            $count = isset($pending_summary[$status]) ? $pending_summary[$status] : 0;
+                            $color = $colors[$index];
+                            echo "
+                                <div class='col-md-4 mb-3'>
+                                    <div class='card text-white bg-{$color}'>
+                                        <div class='card-body'>
+                                            <h5 class='card-title'>{$status}</h5>
+                                            <p class='card-text'>Orders: {$count}</p>
+                                        </div>
+                                    </div>
+                                </div>";
+                        }
+                        ?>
+                    </div>
                 </div>
     </section>
 
