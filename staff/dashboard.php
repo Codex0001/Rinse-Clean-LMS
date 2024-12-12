@@ -118,23 +118,17 @@ $stmt->close();
         </div>
         
         <!-- Widgets Section -->
-        <div class="row mt-4">
-            <div class="col-lg-4">
+        <div class="row mt-3">
+            <div class="col-lg-6">
                 <div class="widget bg-primary text-white p-3 rounded">
                     <h2>Total Orders</h2>
                     <p class="h1" id="total-orders"><?php echo $total_orders; ?></p>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <div class="widget bg-warning text-white p-3 rounded">
                     <h2>Orders In Progress</h2>
                     <p class="h1" id="orders-in-progress"><?php echo $orders_in_progress; ?></p>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="widget bg-success text-white p-3 rounded">
-                    <h2>Salary</h2>
-                    <p class="h1" id="total_salary">Ksh <?php echo number_format($total_salary, 2); ?></p>
                 </div>
             </div>
         </div>
@@ -159,7 +153,7 @@ $stmt->close();
                         <tr>
                             <td><?php echo htmlspecialchars($order['order_id']); ?></td>
                             <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                            <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
+                      <td><?php echo htmlspecialchars($order['pickup_time']); ?></td>
                             <td><?php echo htmlspecialchars($order['laundry_type']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                             <td><?php echo htmlspecialchars($order['fabric_softener']); ?></td>
@@ -177,6 +171,7 @@ $stmt->close();
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>

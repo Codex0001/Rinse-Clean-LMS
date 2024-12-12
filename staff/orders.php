@@ -41,7 +41,7 @@ function getRate($laundry_type, $conn) {
     }
 }
 
-// Function to calculate the total cost based on laundry type and weight
+// Function to calculate the total cost based on laundry type, weight, and any surcharges
 function calculateTotalCost($order, $conn) {
     // Fetch the rate per kg from the rates table based on laundry type
     $laundry_type = $order['laundry_type'];
@@ -53,7 +53,7 @@ function calculateTotalCost($order, $conn) {
     }
 
     // Calculate the cost based on weight (per kg)
-    $weight_cost = $rate * $order['weight']; // Updated to use 'weight' instead of 'total_kgs'
+    $weight_cost = $rate * $order['weight']; // Use 'weight' for total cost calculation
 
     // Special instructions surcharge (if applicable)
     $surcharge = 0;
@@ -67,8 +67,8 @@ function calculateTotalCost($order, $conn) {
     return $total_cost;
 }
 
-// Function to update order status and cost
-function updateOrder($conn, $order_id, $new_status, $weight) {  // Updated variable name to 'weight'
+// Function to update order status, weight, and calculate the cost
+function updateOrder($conn, $order_id, $new_status, $weight) {  // Weight parameter passed from form
     // Fetch the order details from the database
     $sql = "SELECT * FROM orders WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -78,11 +78,14 @@ function updateOrder($conn, $order_id, $new_status, $weight) {  // Updated varia
     $order = $result->fetch_assoc();
     $stmt->close();
 
-    // Calculate the total cost based on the order details
+    // Update the order with the new weight
+    $order['weight'] = $weight; // Set the updated weight
+
+    // Calculate the total cost based on the updated order details
     $total_cost = calculateTotalCost($order, $conn);
 
     // Update the order status, weight, and cost
-    $update_sql = "UPDATE orders SET status = ?, weight = ?, cost = ? WHERE id = ?";  // Updated 'total_kgs' to 'weight'
+    $update_sql = "UPDATE orders SET status = ?, weight = ?, cost = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
     $update_stmt->bind_param('sdii', $new_status, $weight, $total_cost, $order_id);
 
@@ -93,7 +96,7 @@ function updateOrder($conn, $order_id, $new_status, $weight) {  // Updated varia
 if (isset($_POST['update_order'])) {
     $order_id = (int)$_POST['order_id'];
     $new_status = $_POST['status'];
-    $weight = (float)$_POST['weight']; // Ensure it's a float for weight
+    $weight = (float)$_POST['weight']; // Ensure weight is a float
 
     // Validate the new status
     if (!in_array($new_status, $valid_statuses)) {
@@ -200,7 +203,7 @@ $stmt->close();
                     </tr>
                 </thead>
                 <tbody>
-    <?php if (count($orders) > 0): ?>
+        <?php if (count($orders) > 0): ?>
         <?php foreach ($orders as $order): ?>
         <tr>
             <td><?php echo htmlspecialchars($order['order_id']); ?></td>

@@ -71,7 +71,7 @@
                 </li>
 
                 <li class="nav-link">
-                    <a href="feeback.php"> 
+                    <a href="feedback.php"> 
                         <i class='bx bx-chat icon'></i> <!-- Updated icon -->
                         <span class="text nav-text">Feedback</span>
                     </a>

@@ -29,3 +29,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Location: orders.php?success=1');
     exit();
 }
+?>

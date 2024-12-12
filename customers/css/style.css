@@ -402,13 +402,4 @@ body.dark .card {
     color: #D7D7D7; /* Lighter text for readability */
 }
 
-/* Feedback Section Styles */
-.feedback-section {
-    padding: 20px;
-    background-color: var(--body-color);
-    border-radius: 10px;
-}
 
-body.dark .feedback-section {
-    background-color: #242526; /* Darker background for feedback in dark mode */
-}
